@@ -269,3 +269,109 @@
 .btnIniciarVisitaDestaque:active {
     transform: scale(0.95);
 }
+
+/* =========================================================================
+   🔥 NOVO MÓDULO: LANÇAMENTO AVULSO (MANUAL)
+   ========================================================================= */
+
+/* O Botão Destaque abaixo da Super Barra */
+.btnLancamentoManual {
+    background: linear-gradient(90deg, #1A1A1A, #2A2A2A);
+    color: #FFD500;
+    width: 100%;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-weight: 900;
+    font-size: 14px;
+    border: 1px dashed #FFD500;
+    cursor: pointer;
+    margin-bottom: 15px; /* Espaço antes da linha de 3 botões */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.1s;
+}
+
+.btnLancamentoManual:active {
+    transform: scale(0.98);
+    background: #000;
+}
+
+/* O Layout de dentro do Modal Avulso */
+.inputGroupAvulso {
+    background-color: #F4F5F7;
+    border: 1px solid #D1D5DB;
+    border-radius: 12px;
+    padding: 12px 15px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.inputGroupAvulso label {
+    font-size: 15px;
+    font-weight: 800;
+    color: #333;
+    margin: 0;
+}
+
+.inputGroupAvulso input[type="number"] {
+    width: 70px;
+    background-color: #FFF;
+    border: 2px solid #E0E0E0;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 18px;
+    font-weight: 900;
+    text-align: center;
+    color: #000;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.inputGroupAvulso input[type="number"]:focus {
+    border-color: #FFD500;
+}
+
+.textAreaAvulso {
+    width: 100%;
+    background-color: #F4F5F7;
+    border: 1px solid #D1D5DB;
+    border-radius: 12px;
+    padding: 15px;
+    font-size: 15px;
+    color: #000;
+    resize: none;
+    outline: none;
+    box-sizing: border-box;
+    margin-top: 5px;
+    transition: border-color 0.2s;
+}
+
+.textAreaAvulso:focus {
+    border-color: #FFD500;
+    background-color: #FFF;
+}
+
+/* Botão de Salvar dentro do Modal */
+.btnSalvarAvulso {
+    background-color: #FFD500;
+    color: #000;
+    width: 100%;
+    padding: 16px;
+    border-radius: 30px;
+    font-weight: 900;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+    box-shadow: 0 4px 12px rgba(255, 213, 0, 0.4);
+}
+
+.btnSalvarAvulso:disabled {
+    background-color: #CCC;
+    box-shadow: none;
+    cursor: not-allowed;
+}

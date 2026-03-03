@@ -33,7 +33,7 @@ const HomeScreen = () => {
   const [filtroConcluidas, setFiltroConcluidas] = useState('PENDENTES');
   const [filtroPendenciasGlobal, setFiltroPendenciasGlobal] = useState('PENDENTE');
 
-  // Controle de Modais
+  // Controle de Modais Originais
   const [modalFiltroVisible, setModalFiltroVisible] = useState(false);
   const [modalEntregasVisible, setModalEntregasVisible] = useState(false);
   const [modalPendenciasVisible, setModalPendenciasVisible] = useState(false);
@@ -45,6 +45,11 @@ const HomeScreen = () => {
   const [dadosRastreio, setDadosRastreio] = useState(null);
   const [isLoadingRastreio, setIsLoadingRastreio] = useState(false);
   const [buscouRastreio, setBuscouRastreio] = useState(false);
+
+  // 🔥 NOVOS ESTADOS: LANÇAMENTO MANUAL (AVULSO)
+  const [modalManualVisible, setModalManualVisible] = useState(false);
+  const [formManual, setFormManual] = useState({ tasks: '', ofertas: '', missoes: '', pendencia: '' });
+  const [isSavingManual, setIsSavingManual] = useState(false);
 
   const DIAS_SEMANA = ['Todos', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 
@@ -116,8 +121,51 @@ const HomeScreen = () => {
     navigate('/resumo');
   };
 
+  // 🔥 NOVA FUNÇÃO: SALVAR LANÇAMENTO MANUAL (AVULSO)
+  const handleSalvarManual = async () => {
+    setIsSavingManual(true);
+    try {
+      // 1. Salva os números na Torneira 2
+      if (formManual.tasks || formManual.ofertas || formManual.missoes) {
+        await fetch(`http://localhost:8080/lancamento-manual/salvar`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            setor: setorLogado,
+            tasks: Number(formManual.tasks) || 0,
+            ofertas: Number(formManual.ofertas) || 0,
+            missoes: Number(formManual.missoes) || 0
+          })
+        });
+      }
+
+      // 2. Salva a pendência avulsa, se ele tiver digitado algo
+      if (formManual.pendencia.trim() !== '') {
+        await fetch(`http://localhost:8080/pendencias-manuais/salvar`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            setor: setorLogado,
+            texto: formManual.pendencia
+          })
+        });
+      }
+
+      // Limpa tudo, fecha o modal e recarrega a tela com os novos números!
+      setFormManual({ tasks: '', ofertas: '', missoes: '', pendencia: '' });
+      setModalManualVisible(false);
+      carregarDados(); 
+      alert("Lançamento avulso registrado com sucesso! 🚀");
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao salvar lançamento manual. Verifique o servidor.");
+    } finally {
+      setIsSavingManual(false);
+    }
+  };
+
   // ==========================================
-  // 🔥 LÓGICA DE RASTREIO BLINDADA E LIMPA
+  // LÓGICA DE RASTREIO BLINDADA E LIMPA
   // ==========================================
   const abrirModalEntregas = () => {
     setPesquisaRastreio('');
@@ -147,7 +195,7 @@ const HomeScreen = () => {
           nomePdv: resultado.nomePdv,
           motorista: resultado.motorista || "Não Identificado",
           status: resultado.status,
-          horario: resultado.horario || "Indisponível" // 🔥 HORÁRIO CAPTURADO DO BACKEND AQUI!
+          horario: resultado.horario || "Indisponível" 
         });
       } else {
         setDadosRastreio(null);
@@ -230,7 +278,6 @@ const HomeScreen = () => {
     </div>
   );
 
-  // 🔥 O MODAL DE ENTREGAS AGORA FICA ORGANIZADO AQUI
   const renderModalRastreio = () => {
     if (!modalEntregasVisible) return null;
     return (
@@ -283,7 +330,6 @@ const HomeScreen = () => {
                 <span className="rastreioDriverClean">{dadosRastreio.motorista}</span>
               </div>
 
-              {/* 🔥 BLOCO DO RELÓGIO ADICIONADO AQUI! */}
               <div className="rastreioInfoRowMotorista" style={{marginTop: '10px'}}>
                 <span className="rastreioLabelClean">⏰ Status do Horário / Fila</span>
                 <span className="rastreioDriverClean">{dadosRastreio.horario}</span>
@@ -331,12 +377,26 @@ const HomeScreen = () => {
                 
                 {!isLoading && (
                   <div className="dashboard-card-glass">
+                    {/* 🔥 A SUPER BARRA DE PROGRESSO GLOBAL INJETADA AQUI */}
+                    {renderProgressBar(
+                      (dashboard.tasksTotal + dashboard.ofertasTotal + dashboard.missoesTotal), 
+                      55, 
+                      '#8A2BE2', 
+                      '🔥 Progresso Global de Vendas'
+                    )}
+                    <hr style={{ borderColor: 'rgba(255,255,255,0.1)', margin: '15px 0' }}/>
+
                     {renderProgressBar((dashboard.pdvsVisitadosIds || []).length, totalVisitasRota, '#28a745', '📍 Visitas do Dia')}
                     {renderProgressBar(dashboard.tasksTotal, 35, '#FFD500', '📋 Tasks')}
                     {renderProgressBar(dashboard.ofertasTotal, 10, '#17a2b8', '🏷️ Ofertas')}
                     {renderProgressBar(dashboard.missoesTotal, 10, '#FF4500', '🎯 Missões')}
                   </div>
                 )}
+
+                {/* 🔥 O BOTÃO DE LANÇAMENTO AVULSO INJETADO AQUI */}
+                <button className="btnLancamentoManual" onClick={() => setModalManualVisible(true)}>
+                    ➕ LANÇAMENTO AVULSO NA RUA
+                </button>
 
                 <div className="botoes3Row">
                   <button className="btnAcaoAmarelo" onClick={abrirPainelPendencias}>
@@ -479,6 +539,55 @@ const HomeScreen = () => {
 
       {modalFinalizar && (
         <div className="modalOverlayPro"><div className="modalBoxPro"><div className="modalHeaderPro"><h3>Encerrar Rota? ⏹️</h3></div><div className="modalBodyPro"><p>Deseja finalizar a sua jornada e ver o Resumo do Dia?</p></div><div className="modalFooterPro"><button className="btnModalCancel" onClick={() => setModalFinalizar(false)}>VOLTAR</button><button className="btnModalConfirm" onClick={confirmarFinalizacaoJornada}>FINALIZAR</button></div></div></div>
+      )}
+
+      {/* 🔥 NOVO MODAL: LANÇAMENTO MANUAL (AVULSO) INJETADO AQUI */}
+      {modalManualVisible && (
+          <div className="modalOverlayPro">
+              <div className="modalFiltroContent" style={{ paddingBottom: '30px' }}>
+                  <div className="modalHeader">
+                      <h3 className="modalTitle">Lançamento Avulso ✍️</h3>
+                      <button onClick={() => setModalManualVisible(false)} className="closeModalText">FECHAR ❌</button>
+                  </div>
+                  <p style={{ color: '#666', fontSize: '14px', marginBottom: '15px' }}>
+                    Anote vendas e pendências feitas fora da rota oficial. Elas somarão na sua barra de progresso!
+                  </p>
+                  
+                  <div className="inputGroupAvulso">
+                    <label>📋 Tasks Executadas:</label>
+                    <input type="number" placeholder="0" value={formManual.tasks} onChange={(e) => setFormManual({...formManual, tasks: e.target.value})} />
+                  </div>
+                  
+                  <div className="inputGroupAvulso">
+                    <label>🏷️ Ofertas Vendidas:</label>
+                    <input type="number" placeholder="0" value={formManual.ofertas} onChange={(e) => setFormManual({...formManual, ofertas: e.target.value})} />
+                  </div>
+
+                  <div className="inputGroupAvulso">
+                    <label>🎯 Missões Concluídas:</label>
+                    <input type="number" placeholder="0" value={formManual.missoes} onChange={(e) => setFormManual({...formManual, missoes: e.target.value})} />
+                  </div>
+
+                  <div style={{ marginTop: '20px' }}>
+                    <label className="labelFiltro" style={{ color: '#000' }}>⚠️ Nova Pendência Avulsa:</label>
+                    <textarea 
+                        className="textAreaAvulso" 
+                        rows="3" 
+                        placeholder="Ex: Falar com supervisor sobre material..."
+                        value={formManual.pendencia}
+                        onChange={(e) => setFormManual({...formManual, pendencia: e.target.value})}
+                    />
+                  </div>
+
+                  <button 
+                      className="btnSalvarAvulso" 
+                      onClick={handleSalvarManual} 
+                      disabled={isSavingManual}
+                  >
+                      {isSavingManual ? 'SALVANDO...' : 'SALVAR NA NUVEM ☁️'}
+                  </button>
+              </div>
+          </div>
       )}
 
     </div>
