@@ -8,7 +8,7 @@ export const criarPdv = async (pdv) => {
 // 🔥 Agora a função pede a rota do setor específico
 export const listarPdvs = async (setor) => {
   try {
-    const response = await fetch(`https://rnplanner-api.azurewebsites.net/pdvs/setor/${setor}`);
+    const response = await fetch(`https://rnplanner-api-ekc2hratcvgqhgc5.brazilsouth-01.azurewebsites.net/pdvs/setor/${setor}`);
     if (!response.ok) return [];
     return await response.json();
   } catch (error) {

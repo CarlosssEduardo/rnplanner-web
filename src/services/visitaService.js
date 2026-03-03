@@ -22,7 +22,7 @@ export const obterDashboardGeral = async (setorParam) => {
     const setor = setorParam || localStorage.getItem('setorAtivo');
     
     // Envia o setor na URL para o Java filtrar
-    const response = await fetch(`http://192.168.100.242:8080/visitas/dashboard/${setor}`);
+    const response = await fetch(`https://rnplanner-api-ekc2hratcvgqhgc5.brazilsouth-01.azurewebsites.net/visitas/dashboard/${setor}`);
     if (!response.ok) return { pdvsVisitadosIds: [], tasksTotal: 0, ofertasTotal: 0, missoesTotal: 0 };
     return await response.json();
   } catch (error) {
@@ -53,7 +53,7 @@ export const obterPendenciasGlobais = async (setorParam) => {
 export const consultarRastreio = async (pdvId) => {
   try {
     // Usando o seu IP oficial para o celular não se perder
-    const response = await fetch(`https://rnplanner-api.azurewebsites.net/entregas/rastreio/${pdvId}`);
+    const response = await fetch(`https://rnplanner-api-ekc2hratcvgqhgc5.brazilsouth-01.azurewebsites.net/entregas/rastreio/${pdvId}`);
     
     if (!response.ok) {
       return null; // Se o PDV não tiver carga, retorna nulo
