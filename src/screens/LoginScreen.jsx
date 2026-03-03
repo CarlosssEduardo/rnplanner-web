@@ -28,7 +28,7 @@ const LoginScreen = () => {
 
     try {
       // 🔥 O SEGURANÇA NA PORTA: Pergunta pro Java se esse setor existe (retorna true ou false)
-      const response = await fetch(`http://192.168.100.242:8080/pdvs/verificar/${setor.trim()}`);
+      const response = await fetch(`https://rnplanner-api-ekc2hratcvgqhgc5.brazilsouth-01.azurewebsites.net/pdvs/verificar/${setor.trim()}`);
       
       if (!response.ok) {
         mostrarErro("Erro na comunicação com o servidor.");
