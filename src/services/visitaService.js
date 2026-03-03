@@ -32,9 +32,18 @@ export const obterDashboardGeral = async (setorParam) => {
   }
 };
 
-export const obterDashboardMes = async () => {
-  const response = await api.get('/visitas/dashboard/mes');
-  return response.data;
+// Ache essa função no seu visitaService.js e deixe ela EXATAMENTE assim:
+
+export const obterDashboardMes = async (setor) => {
+  try {
+    // 🔥 Agora ele manda o setor na URL pro Java reconhecer!
+    const response = await fetch(`${BASE_URL}/visitas/dashboard/mes/${setor}`);
+    if (!response.ok) throw new Error("Erro ao buscar o mês");
+    return await response.json();
+  } catch (error) {
+    console.error("Erro no obterDashboardMes:", error);
+    return null;
+  }
 };
 
 // 🔥 FUNÇÃO BLINDADA: O Java agora exige o setor nas pendências para não misturar!
