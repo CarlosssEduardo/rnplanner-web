@@ -81,7 +81,9 @@ const VisitaScreen = () => {
   const executarFinalizacao = async () => {
     try {
       setIsSaving(true);
-      const obs = pendencias.length > 0 ? JSON.stringify(pendencias) : '';
+      // 🔥 CORREÇÃO 1: Extrai e envia apenas o texto puro, sem JSON!
+      const textosPendencias = pendencias.map(p => p.texto).join(" | ");
+      const obs = pendencias.length > 0 ? textosPendencias : '';
       
       await finalizarVisita(visita.id, obs, qtdTasks, qtdOfertas, qtdMissoes);
       
@@ -90,7 +92,6 @@ const VisitaScreen = () => {
         title: isModoPendencias ? 'Alterações Salvas!' : 'Visita Finalizada! ✅', 
         message: isModoPendencias ? 'Os acordos foram atualizados com sucesso.' : 'Atendimento registado com sucesso.', 
         onConfirm: () => {
-            // 🔥 LÓGICA DE OURO: Se for pendência, manda a Home abrir o painel de novo!
             if (isModoPendencias) {
                 navigate('/home', { state: { openPendencias: true } });
             } else {
