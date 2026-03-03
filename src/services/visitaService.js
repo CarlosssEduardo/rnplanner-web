@@ -65,4 +65,19 @@ export const consultarRastreio = async (pdvId) => {
     console.error("Erro na busca de rastreio:", error);
     throw error;
   }
+  
+};
+
+// Resolve a anotação manual
+export const resolverPendenciaManual = async (id) => {
+  await fetch(`https://rnplanner-api-ekc2hratcvgqhgc5.brazilsouth-01.azurewebsites.net/pendencias-manuais/resolver/${id}`, {
+    method: 'PUT'
+  });
+};
+
+// Apaga a anotação manual
+export const deletarPendenciaManual = async (id) => {
+  await fetch(`https://rnplanner-api-ekc2hratcvgqhgc5.brazilsouth-01.azurewebsites.net/pendencias-manuais/deletar/${id}`, {
+    method: 'DELETE'
+  });
 };

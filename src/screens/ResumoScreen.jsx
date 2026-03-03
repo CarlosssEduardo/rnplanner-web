@@ -22,11 +22,16 @@ const ResumoScreen = () => {
     const carregarResumos = async () => {
       try {
         setIsLoading(true);
-        // Faz as duas perguntas pro Java ao mesmo tempo!
+        
+        // 🔥 A MÁGICA: Pega o setor logado no seu aparelho
+        const setorLogado = localStorage.getItem('setorAtivo') || '---';
+
+        // 🔥 Agora enviamos o setor como "RG" para o Java saber quem é você!
         const [resumoHoje, resumoMensal] = await Promise.all([
-          obterDashboardGeral(),
-          obterDashboardMes()
+          obterDashboardGeral(setorLogado),
+          obterDashboardMes(setorLogado)
         ]);
+        
         setDadosHoje(resumoHoje);
         setDadosMes(resumoMensal);
       } catch (error) {
@@ -59,7 +64,6 @@ const ResumoScreen = () => {
 
   const StatCard = ({ titulo, valor, icone, corIcone }) => (
     <div className="statCard">
-      {/* Usando a opacidade em hexadecimal direto no inline style igual ao RN */}
       <div className="iconContainer" style={{ backgroundColor: corIcone + '20' }}>
         <span className="statIcon" style={{ color: corIcone }}>{icone}</span>
       </div>
@@ -81,9 +85,7 @@ const ResumoScreen = () => {
 
   return (
     <div className="resumoContainer">
-      
       <div className="scrollArea">
-        
         <div className="header">
           <h1 className="headerTitle">Resumo da Jornada</h1>
           <span className="headerDate">TRABALHO FINALIZADO</span>
@@ -105,13 +107,14 @@ const ResumoScreen = () => {
         </div>
 
         <h2 className="sectionTitle">🏆 Conquistas do Mês</h2>
-        <span className="sectionSubtitle">Visão geral do seu impacto CDD Belém..</span>
+        <span className="sectionSubtitle">Visão geral do seu impacto individual..</span>
 
         <div className="statsGrid">
             <StatCard icone="📅" corIcone={THEME.YELLOW} valor={dadosMes?.diasTrabalhados} titulo="Dias Trabalhados" />
             <StatCard icone="✅" corIcone={THEME.SUCCESS} valor={dadosMes?.problemasResolvidos} titulo="Problemas Resolvidos" />
             <StatCard icone="⚡" corIcone={THEME.OFERTA} valor={dadosMes?.totalTasksMes} titulo="Total de Tasks" />
-            <StatCard icone="🏅" corIcone={THEME.MISSAO} valor="Top 10 - CDD Belém" titulo="Seu Ranking Atual" />
+            {/* 🔥 Ranking dinâmico vindo direto do Java */}
+            <StatCard icone="🏅" corIcone={THEME.MISSAO} valor={dadosMes?.ranking || "Calculando..."} titulo="Seu Ranking Atual" />
         </div>
         
         <div className="footerSpacing" />

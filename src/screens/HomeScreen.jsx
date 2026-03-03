@@ -2,7 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './HomeScreen.css';
 import { listarPdvs } from '../services/pdvService';
-import { obterDashboardGeral, obterPendenciasGlobais, consultarRastreio } from '../services/visitaService';
+import { 
+  obterDashboardGeral, 
+  obterPendenciasGlobais, 
+  consultarRastreio, 
+  resolverPendenciaManual, 
+  deletarPendenciaManual 
+} from '../services/visitaService';
 
 const getDiaAtual = () => {
   const dias = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
@@ -128,12 +134,31 @@ const HomeScreen = () => {
     navigate('/resumo');
   };
 
+  // 🔥 NOVA FUNÇÃO: RESOLVER OU APAGAR REGISTROS DO HUB (SEM TELA BRANCA)
+  const handleAcaoManual = async (idCompleto, acao) => {
+    const idNumeric = typeof idCompleto === 'string' ? idCompleto.replace('MANUAL-', '') : idCompleto;
+    try {
+      if (acao === 'resolver') {
+        await resolverPendenciaManual(idNumeric);
+        showToast("Registro marcado como resolvido! ✅", "success");
+      } else {
+        await deletarPendenciaManual(idNumeric);
+        showToast("Registro removido com sucesso! 🗑️", "success");
+      }
+      // Atualiza a lista após a ação para refletir a mudança no modal
+      const dadosPend = await obterPendenciasGlobais();
+      setPendenciasGlobais(dadosPend || []);
+    } catch (error) {
+      console.error(error);
+      showToast("Erro ao processar a ação.", "error");
+    }
+  };
+
   // 🔥 SALVAR LANÇAMENTO MANUAL (AVULSO)
   const handleSalvarManual = async () => {
     setIsSavingManual(true);
     try {
-      // ⚠️ ATENÇÃO: COLOQUE A URL DO SEU BACK-END NO AZURE AQUI!
-      // Se for testar na sua máquina, mude para: http://localhost:8080
+
       const BASE_URL = 'https://rnplanner-api-ekc2hratcvgqhgc5.brazilsouth-01.azurewebsites.net'; 
 
       if (formManual.tasks || formManual.ofertas || formManual.missoes) {
@@ -163,7 +188,7 @@ const HomeScreen = () => {
       setFormManual({ tasks: '', ofertas: '', missoes: '', pendencia: '' });
       setModalManualVisible(false);
       carregarDados(); 
-      showToast("Lançamento avulso registrado com sucesso! 🚀", "success");
+      showToast("Hub de Execução atualizado com sucesso! 🚀", "success");
     } catch (error) {
       console.error(error);
       showToast("Erro ao salvar! Verifique se o Back-end está online.", "error");
@@ -271,7 +296,7 @@ const HomeScreen = () => {
       <div className="metaContainer" style={{ marginBottom: '20px' }}>
         <div className="metaHeader">
           <span className="metaLabel" style={{ color: '#FFD500', fontSize: '15px', textTransform: 'uppercase' }}>
-            🔥 Progresso Global de Vendas
+            🔥 Performance de Execução
           </span>
           <span className="metaText" style={{ color: '#FFD500', fontSize: '20px', fontWeight: '900', textShadow: bateuMeta ? '0px 0px 10px #FF4500' : 'none' }}>
             {progressoPercent}% {bateuMeta && '💥🚀'}
@@ -434,7 +459,7 @@ const HomeScreen = () => {
                 )}
 
                 <button className="btnLancamentoManual" onClick={() => setModalManualVisible(true)}>
-                    ➕ LANÇAMENTO AVULSO NA RUA
+                    ➕ Hub de Execução
                 </button>
 
                 <div className="botoes3Row">
@@ -554,15 +579,27 @@ const HomeScreen = () => {
                               <div key={index} className="pendenciaCardGlobal">
                                   <div className="pendenciaPdvInfo">
                                       <span className="pendenciaPdvName">{pendencia.pdvNome}</span>
-                                      <span className="pendenciaPdvId">#{pendencia.pdvId}</span>
+                                      {/* Só exibe o ID se ele não for 0 (Hub) */}
+                                      {pendencia.pdvId !== 0 && <span className="pendenciaPdvId">#{pendencia.pdvId}</span>}
                                   </div>
                                   <div className="pendenciaTextoBox">
                                       <div className={`statusIndicatorGlobal ${pendencia.status === 'RESOLVIDO' ? 'statusResolvido' : 'statusPendente'}`}></div>
                                       <span className={`pendenciaTexto ${pendencia.status === 'RESOLVIDO' ? 'pendenciaTextoRiscado' : ''}`}>{pendencia.texto}</span>
                                   </div>
-                                  <button className="irParaPdvBtnAmarelo" onClick={() => { setModalPendenciasVisible(false); navigate('/visita', { state: { pdvId: pendencia.pdvId, pdvNome: pendencia.pdvNome, modo: 'PENDENCIAS_ONLY' } }); }}>
-                                      ABRIR VISITA ➔
-                                  </button>
+                                  
+                                  {/* 🔥 BOTÕES INTELIGENTES: Resolver/Apagar para Hub, Abrir Visita para PDVs */}
+                                  <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '10px' }}>
+                                    {pendencia.pdvId === 0 ? (
+                                        <>
+                                            <button className="btnAcaoVermelho" style={{ padding: '8px 12px', fontSize: '12px', minWidth: 'auto' }} onClick={() => handleAcaoManual(pendencia.id, 'deletar')}>🗑️ APAGAR</button>
+                                            <button className="btnIniciarVisitaDestaque" style={{ padding: '8px 12px', fontSize: '12px', minWidth: 'auto' }} onClick={() => handleAcaoManual(pendencia.id, 'resolver')}>✅ RESOLVER</button>
+                                        </>
+                                    ) : (
+                                        <button className="irParaPdvBtnAmarelo" onClick={() => { setModalPendenciasVisible(false); navigate('/visita', { state: { pdvId: pendencia.pdvId, pdvNome: pendencia.pdvNome, modo: 'PENDENCIAS_ONLY' } }); }}>
+                                            ABRIR VISITA ➔
+                                        </button>
+                                    )}
+                                  </div>
                               </div>
                           ))
                       )}
@@ -580,46 +617,46 @@ const HomeScreen = () => {
         <div className="modalOverlayPro"><div className="modalBoxPro"><div className="modalHeaderPro"><h3>Encerrar Rota? ⏹️</h3></div><div className="modalBodyPro"><p>Deseja finalizar a sua jornada e ver o Resumo do Dia?</p></div><div className="modalFooterPro"><button className="btnModalCancel" onClick={() => setModalFinalizar(false)}>VOLTAR</button><button className="btnModalConfirm" onClick={confirmarFinalizacaoJornada}>FINALIZAR</button></div></div></div>
       )}
 
-      {/* 🔥 MODAL DE LANÇAMENTO MANUAL */}
+      {/* 🔥 MODAL DE Hub de Execução */}
       {modalManualVisible && (
           <div className="modalOverlayPro">
               <div className="modalFiltroContent" style={{ paddingBottom: '30px' }}>
                   <div className="modalHeader">
-                      <h3 className="modalTitle">Lançamento Avulso ✍️</h3>
+                      <h3 className="modalTitle">Hub de Execução ✍️</h3>
                       <button onClick={() => setModalManualVisible(false)} className="closeModalText">FECHAR ❌</button>
                   </div>
                   <p style={{ color: '#666', fontSize: '14px', marginBottom: '15px' }}>
-                    Anote vendas e pendências feitas fora da rota oficial. Elas somarão na sua barra de progresso!
+                    Adicione manualmente Tasks, Ofertas, Missões e Pendências. Tudo será somado à sua barra de Performance e ao resumo final!
                   </p>
                   
                   <div className="inputGroupAvulso">
-                    <label>📋 Tasks Executadas:</label>
+                    <label>📋 Tasks:</label>
                     <input type="number" placeholder="0" value={formManual.tasks} onChange={(e) => setFormManual({...formManual, tasks: e.target.value})} />
                   </div>
                   
                   <div className="inputGroupAvulso">
-                    <label>🏷️ Ofertas Vendidas:</label>
+                    <label>🏷️ Ofertas de Pontos:</label>
                     <input type="number" placeholder="0" value={formManual.ofertas} onChange={(e) => setFormManual({...formManual, ofertas: e.target.value})} />
                   </div>
 
                   <div className="inputGroupAvulso">
-                    <label>🎯 Missões Concluídas:</label>
+                    <label>🎯 Missões:</label>
                     <input type="number" placeholder="0" value={formManual.missoes} onChange={(e) => setFormManual({...formManual, missoes: e.target.value})} />
                   </div>
 
                   <div style={{ marginTop: '20px' }}>
-                    <label className="labelFiltro" style={{ color: '#000' }}>⚠️ Nova Pendência Avulsa:</label>
+                    <label className="labelFiltro" style={{ color: '#000' }}>⚠️ Novo Registro de Pendência:</label>
                     <textarea 
                         className="textAreaAvulso" 
                         rows="3" 
-                        placeholder="Ex: Falar com supervisor sobre material..."
+                        placeholder="Ex: Falar com Gerente de Vendas sobre material..."
                         value={formManual.pendencia}
                         onChange={(e) => setFormManual({...formManual, pendencia: e.target.value})}
                     />
                   </div>
 
                   <button 
-                      className="btnSalvarAvulso" 
+                      className="btnSalvarPendência" 
                       onClick={handleSalvarManual} 
                       disabled={isSavingManual}
                   >
