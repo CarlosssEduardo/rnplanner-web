@@ -46,15 +46,16 @@ const HomeScreen = () => {
   const [isLoadingRastreio, setIsLoadingRastreio] = useState(false);
   const [buscouRastreio, setBuscouRastreio] = useState(false);
 
-  // 🔥 NOVOS ESTADOS: LANÇAMENTO MANUAL (AVULSO)
+  // 🔥 ESTADOS: LANÇAMENTO MANUAL E ALERTA PREMIUM (TOAST)
   const [modalManualVisible, setModalManualVisible] = useState(false);
   const [formManual, setFormManual] = useState({ tasks: '', ofertas: '', missoes: '', pendencia: '' });
   const [isSavingManual, setIsSavingManual] = useState(false);
+  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
 
   const DIAS_SEMANA = ['Todos', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 
   // ==========================================
-  // EFEITOS DE CICLO DE VIDA (useEffect)
+  // EFEITOS DE CICLO DE VIDA E UTILIDADES
   // ==========================================
   useEffect(() => {
     localStorage.setItem('jornadaAtiva', jornadaAtiva);
@@ -77,6 +78,12 @@ const HomeScreen = () => {
       navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location, navigate]);
+
+  // Função para chamar o Alerta Bonitão
+  const showToast = (message, type = 'success') => {
+    setToast({ visible: true, message, type });
+    setTimeout(() => setToast({ visible: false, message: '', type: 'success' }), 4000);
+  };
 
   // ==========================================
   // FUNÇÕES DE CARREGAMENTO E AÇÕES DA ROTA
@@ -121,13 +128,16 @@ const HomeScreen = () => {
     navigate('/resumo');
   };
 
-  // 🔥 NOVA FUNÇÃO: SALVAR LANÇAMENTO MANUAL (AVULSO)
+  // 🔥 SALVAR LANÇAMENTO MANUAL (AVULSO)
   const handleSalvarManual = async () => {
     setIsSavingManual(true);
     try {
-      // 1. Salva os números na Torneira 2
+      // ⚠️ ATENÇÃO: COLOQUE A URL DO SEU BACK-END NO AZURE AQUI!
+      // Se for testar na sua máquina, mude para: http://localhost:8080
+      const BASE_URL = 'http://localhost:8080'; 
+
       if (formManual.tasks || formManual.ofertas || formManual.missoes) {
-        await fetch(`http://localhost:8080/lancamento-manual/salvar`, {
+        await fetch(`${BASE_URL}/lancamento-manual/salvar`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -139,9 +149,8 @@ const HomeScreen = () => {
         });
       }
 
-      // 2. Salva a pendência avulsa, se ele tiver digitado algo
       if (formManual.pendencia.trim() !== '') {
-        await fetch(`http://localhost:8080/pendencias-manuais/salvar`, {
+        await fetch(`${BASE_URL}/pendencias-manuais/salvar`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -151,21 +160,20 @@ const HomeScreen = () => {
         });
       }
 
-      // Limpa tudo, fecha o modal e recarrega a tela com os novos números!
       setFormManual({ tasks: '', ofertas: '', missoes: '', pendencia: '' });
       setModalManualVisible(false);
       carregarDados(); 
-      alert("Lançamento avulso registrado com sucesso! 🚀");
+      showToast("Lançamento avulso registrado com sucesso! 🚀", "success");
     } catch (error) {
       console.error(error);
-      alert("Erro ao salvar lançamento manual. Verifique o servidor.");
+      showToast("Erro ao salvar! Verifique se o Back-end está online.", "error");
     } finally {
       setIsSavingManual(false);
     }
   };
 
   // ==========================================
-  // LÓGICA DE RASTREIO BLINDADA E LIMPA
+  // LÓGICA DE RASTREIO
   // ==========================================
   const abrirModalEntregas = () => {
     setPesquisaRastreio('');
@@ -248,8 +256,40 @@ const HomeScreen = () => {
   }).length;
 
   // ==========================================
-  // RENDERIZAÇÃO DE COMPONENTES VISUAIS SECUNDÁRIOS
+  // RENDERIZAÇÃO DE COMPONENTES VISUAIS
   // ==========================================
+
+  // 🔥 A NOVA BARRA GLOBAL (PORCENTAGEM E EXPLOSÃO)
+  const renderGlobalProgressBar = (atual, meta) => {
+    const metaReal = meta > 0 ? meta : 1;
+    const progressoPercent = Math.round((atual / metaReal) * 100);
+    const bateuMeta = progressoPercent >= 100;
+    // Trava a largura do preenchimento em 100% pra não vazar a tela
+    const widthVisual = Math.min(progressoPercent, 100);
+
+    return (
+      <div className="metaContainer" style={{ marginBottom: '20px' }}>
+        <div className="metaHeader">
+          <span className="metaLabel" style={{ color: '#FFD500', fontSize: '15px', textTransform: 'uppercase' }}>
+            🔥 Progresso Global de Vendas
+          </span>
+          <span className="metaText" style={{ color: '#FFD500', fontSize: '20px', fontWeight: '900', textShadow: bateuMeta ? '0px 0px 10px #FF4500' : 'none' }}>
+            {progressoPercent}% {bateuMeta && '💥🚀'}
+          </span>
+        </div>
+        <div className={`progressBarBackground ${bateuMeta ? 'barraExplosao' : ''}`} style={{ height: '14px', backgroundColor: '#222', border: bateuMeta ? '1px solid #FFD500' : 'none' }}>
+          <div
+            className="progressBarFill"
+            style={{
+              width: `${widthVisual}%`,
+              background: bateuMeta ? 'linear-gradient(90deg, #FFD500, #FF4500)' : 'linear-gradient(90deg, #B8860B, #FFD500)'
+            }}
+          ></div>
+        </div>
+      </div>
+    );
+  };
+
   const renderProgressBar = (atual, meta, corHex, label) => {
     const metaReal = meta > 0 ? meta : 1; 
     const progresso = Math.min((atual / metaReal) * 100, 100);
@@ -377,13 +417,13 @@ const HomeScreen = () => {
                 
                 {!isLoading && (
                   <div className="dashboard-card-glass">
-                    {/* 🔥 A SUPER BARRA DE PROGRESSO GLOBAL INJETADA AQUI */}
-                    {renderProgressBar(
+                    
+                    {/* 🔥 BARRA GLOBAL (PORCENTAGEM) INJETADA AQUI */}
+                    {renderGlobalProgressBar(
                       (dashboard.tasksTotal + dashboard.ofertasTotal + dashboard.missoesTotal), 
-                      55, 
-                      '#8A2BE2', 
-                      '🔥 Progresso Global de Vendas'
+                      55
                     )}
+
                     <hr style={{ borderColor: 'rgba(255,255,255,0.1)', margin: '15px 0' }}/>
 
                     {renderProgressBar((dashboard.pdvsVisitadosIds || []).length, totalVisitasRota, '#28a745', '📍 Visitas do Dia')}
@@ -393,7 +433,6 @@ const HomeScreen = () => {
                   </div>
                 )}
 
-                {/* 🔥 O BOTÃO DE LANÇAMENTO AVULSO INJETADO AQUI */}
                 <button className="btnLancamentoManual" onClick={() => setModalManualVisible(true)}>
                     ➕ LANÇAMENTO AVULSO NA RUA
                 </button>
@@ -541,7 +580,7 @@ const HomeScreen = () => {
         <div className="modalOverlayPro"><div className="modalBoxPro"><div className="modalHeaderPro"><h3>Encerrar Rota? ⏹️</h3></div><div className="modalBodyPro"><p>Deseja finalizar a sua jornada e ver o Resumo do Dia?</p></div><div className="modalFooterPro"><button className="btnModalCancel" onClick={() => setModalFinalizar(false)}>VOLTAR</button><button className="btnModalConfirm" onClick={confirmarFinalizacaoJornada}>FINALIZAR</button></div></div></div>
       )}
 
-      {/* 🔥 NOVO MODAL: LANÇAMENTO MANUAL (AVULSO) INJETADO AQUI */}
+      {/* 🔥 MODAL DE LANÇAMENTO MANUAL */}
       {modalManualVisible && (
           <div className="modalOverlayPro">
               <div className="modalFiltroContent" style={{ paddingBottom: '30px' }}>
@@ -588,6 +627,14 @@ const HomeScreen = () => {
                   </button>
               </div>
           </div>
+      )}
+
+      {/* 🔥 O NOSSO ALERTA PREMIUM (TOAST) */}
+      {toast.visible && (
+        <div className={`toastGlobalPro ${toast.type === 'success' ? 'toastSuccess' : 'toastError'}`}>
+          <span style={{ fontSize: '20px' }}>{toast.type === 'success' ? '✅' : '❌'}</span>
+          <p className="toastText">{toast.message}</p>
+        </div>
       )}
 
     </div>

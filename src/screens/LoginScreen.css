@@ -311,3 +311,14 @@
     opacity: 1; 
   }
 }
+
+/* Animação para quando bater 100% de meta! */
+@keyframes explodirMeta {
+  0% { box-shadow: 0 0 5px #FFD500; transform: scale(1); }
+  50% { box-shadow: 0 0 15px #FF4500, 0 0 30px #FFD500; transform: scale(1.02); }
+  100% { box-shadow: 0 0 5px #FFD500; transform: scale(1); }
+}
+
+.barraExplosao {
+  animation: explodirMeta 1.5s infinite alternate;
+}
