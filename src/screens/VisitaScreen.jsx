@@ -81,9 +81,9 @@ const VisitaScreen = () => {
   const executarFinalizacao = async () => {
     try {
       setIsSaving(true);
-      // 🔥 CORREÇÃO 1: Extrai e envia apenas o texto puro, sem JSON!
-      const textosPendencias = pendencias.map(p => p.texto).join(" | ");
-      const obs = pendencias.length > 0 ? textosPendencias : '';
+      
+      // 🔥 CORREÇÃO 1: Voltamos a usar o JSON. O React PRECISA dele para lembrar quem está resolvido ou não!
+      const obs = pendencias.length > 0 ? JSON.stringify(pendencias) : '';
       
       await finalizarVisita(visita.id, obs, qtdTasks, qtdOfertas, qtdMissoes);
       
