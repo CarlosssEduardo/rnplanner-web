@@ -134,7 +134,7 @@ const HomeScreen = () => {
     try {
       // ⚠️ ATENÇÃO: COLOQUE A URL DO SEU BACK-END NO AZURE AQUI!
       // Se for testar na sua máquina, mude para: http://localhost:8080
-      const BASE_URL = 'http://localhost:8080'; 
+      const BASE_URL = 'https://rnplanner-api-ekc2hratcvgqhgc5.brazilsouth-01.azurewebsites.net'; 
 
       if (formManual.tasks || formManual.ofertas || formManual.missoes) {
         await fetch(`${BASE_URL}/lancamento-manual/salvar`, {
