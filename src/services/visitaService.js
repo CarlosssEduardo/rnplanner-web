@@ -15,14 +15,15 @@ export const finalizarVisita = async (visitaId, anotacao, tasks, ofertas, missoe
   return response.data;
 };
 
-// 🔥 FUNÇÃO BLINDADA: Com Auto-Preenchimento para não zerar o Resumo!
+// 🔥 FUNÇÃO BLINDADA E CONECTADA AO NOVO FUNIL DAS DUAS TORNEIRAS!
 export const obterDashboardGeral = async (setorParam) => {
   try {
     // Se a tela mandar o setor, ele usa. Se não mandar (ex: Tela de Resumo), ele busca no cache do celular!
     const setor = setorParam || localStorage.getItem('setorAtivo');
     
-    // Envia o setor na URL para o Java filtrar
-    const response = await fetch(`https://rnplanner-api-ekc2hratcvgqhgc5.brazilsouth-01.azurewebsites.net/visitas/dashboard/${setor}`);
+    // ⚠️ A MÁGICA ACONTECE AQUI: Mudamos a URL para a rota nova do DashboardController!
+    const response = await fetch(`https://rnplanner-api-ekc2hratcvgqhgc5.brazilsouth-01.azurewebsites.net/dashboard/resumo-do-dia/setor/${setor}`);
+    
     if (!response.ok) return { pdvsVisitadosIds: [], tasksTotal: 0, ofertasTotal: 0, missoesTotal: 0 };
     return await response.json();
   } catch (error) {
