@@ -1,0 +1,89 @@
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+body { background-color: #F4F5F7; color: #333; -webkit-font-smoothing: antialiased; }
+.app-container { max-width: 600px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; position: relative; background: #F4F5F7; }
+
+/* HEADER & COLMEIA */
+.header-area { background-color: #000; padding: 40px 20px 25px; border-bottom: 5px solid #FFD500; position: relative; overflow: hidden; }
+.bg-colmeia { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; opacity: 0.1; }
+.hex { position: absolute; width: 140px; height: 140px; border: 2px solid #FFD500; border-radius: 20px; transform: rotate(45deg); }
+.hex.h1 { top: -20px; left: -40px; } .hex.h2 { top: 80px; right: -50px; } .hex.h3 { top: 220px; left: 20px; } .hex.h4 { top: 350px; right: -20px; }
+
+.header-title { color: #FFD500; font-size: 28px; font-weight: 900; margin-bottom: 15px; position: relative; z-index: 2; }
+
+/* CARTÃO INICIAR */
+.iniciar-jornada-card { background: #1A1A1A; border: 1px solid #E5B800; border-radius: 15px; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 2; }
+.iniciar-info { display: flex; align-items: center; gap: 10px; }
+.iniciar-icon { font-size: 35px; }
+.iniciar-info h2 { color: #FFD500; font-size: 18px; }
+.iniciar-info p { color: #AAA; font-size: 12px; }
+.btn-iniciar { background: #FFD500; color: #000; border: none; padding: 10px 15px; border-radius: 20px; font-weight: 900; cursor: pointer; }
+
+/* HEADER ATIVO & BOTÕES */
+.active-header { position: relative; z-index: 2; }
+.header-subtitle { color: #FFF; font-size: 18px; margin-bottom: 10px; }
+.botoes-row { display: flex; gap: 8px; margin-bottom: 15px; }
+.btn-acao { flex: 1; padding: 10px; border-radius: 10px; font-weight: bold; font-size: 11px; cursor: pointer; border: 1px solid; background: #333; }
+.btn-acao.amarelo { color: #FFD500; border-color: #FFD500; }
+.btn-acao.azul { color: #0d6efd; border-color: #0d6efd; }
+.btn-acao.vermelho { color: #FFF; background: #dc3545; border-color: #dc3545; }
+
+/* PROGRESS BARS */
+.metas-wrapper { margin-top: 10px; }
+.meta-container { margin-bottom: 10px; }
+.meta-header { display: flex; justify-content: space-between; font-size: 13px; font-weight: bold; margin-bottom: 5px; }
+.meta-label { color: #FFF; }
+.progress-bg { height: 8px; background: #333; border-radius: 4px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+
+/* REPOUSO */
+.inactive-container { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; text-align: center; }
+.inactive-emoji { font-size: 60px; margin-bottom: 15px; }
+.inactive-container h2 { font-size: 22px; margin-bottom: 10px; color: #000; }
+.inactive-container p { color: #6c757d; }
+
+/* CONTEÚDO PRINCIPAL (BUSCA E LISTA) */
+.main-content { padding: 15px; flex: 1; }
+.search-bar { background: #FFF; display: flex; align-items: center; padding: 15px; border-radius: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #D1D5DB; margin-bottom: 15px; }
+.search-icon { margin-right: 10px; font-size: 18px; }
+.search-bar input { flex: 1; border: none; outline: none; font-size: 15px; color: #333; background: transparent; }
+
+.quick-filters { display: flex; gap: 10px; margin-bottom: 15px; }
+.filter-btn { flex: 1; padding: 12px; background: #FFF; border: 1px solid #D1D5DB; border-radius: 20px; font-weight: bold; color: #6c757d; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+.filter-btn.active-pen { background: #FFF3CD; border-color: #FFD500; color: #856404; }
+.filter-btn.active-con { background: #E8F5E9; border-color: #28a745; color: #28a745; }
+
+/* PDV CARDS */
+.pdv-list { display: flex; flex-direction: column; gap: 15px; padding-bottom: 30px; }
+.pdv-card { background: #FFF; border-radius: 12px; padding: 16px; border: 1px solid #D1D5DB; box-shadow: 0 3px 6px rgba(0,0,0,0.05); }
+.pdv-card.concluido { border: 2px solid #28a745; }
+.card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.card-header h3 { font-size: 18px; color: #000; }
+.badge { background: #F4F5F7; padding: 4px 8px; border-radius: 6px; font-weight: bold; color: #6c757d; font-size: 14px; }
+.card-body { color: #6c757d; font-weight: 500; margin-bottom: 15px; font-size: 14px; }
+.card-footer { border-top: 1px solid #F4F5F7; padding-top: 12px; text-align: right; }
+.action-text { font-weight: bold; font-size: 14px; }
+
+/* MODAIS (Estilo Gaveta do iOS) */
+.modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); display: flex; align-items: flex-end; z-index: 1000; }
+.modal-content { background: #FFF; width: 100%; border-radius: 25px 25px 0 0; padding: 25px; min-height: 50vh; animation: slideUp 0.3s ease-out; }
+.painel-pendencias { min-height: 85vh; }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.modal-header h2 { font-size: 20px; font-weight: 900; }
+.sub-title { font-size: 14px; color: #6c757d; margin-top: 2px; }
+.close-btn { background: none; border: none; color: #dc3545; font-weight: bold; font-size: 14px; cursor: pointer; }
+
+/* MODAL ENTREGAS */
+.input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+.input-group input { flex: 1; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 15px; }
+.btn-buscar { background: #0d6efd; color: #FFF; border: none; padding: 0 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+.rastreio-card-clean { background: #FFF; padding: 20px; border-radius: 12px; border: 1px solid #E0E0E0; box-shadow: 0 3px 6px rgba(0,0,0,0.05); }
+.rastreio-pdv-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F0F0F0; padding-bottom: 15px; margin-bottom: 15px; }
+.rastreio-status-box { background: #F9F9F9; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px; }
+.rastreio-status-box h2 { font-size: 18px; font-weight: 900; margin-bottom: 5px; }
+.rastreio-status-box p { font-size: 13px; color: #666; font-style: italic; }
+.rastreio-driver { border-top: 1px solid #F0F0F0; padding-top: 15px; text-align: center; }
+.erro { border-color: #dc3545; background-color: #ffe6e6; text-align: center; }
+.empty-state { text-align: center; color: #AAA; font-style: italic; margin-top: 40px; }

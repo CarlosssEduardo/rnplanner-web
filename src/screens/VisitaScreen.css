@@ -1,0 +1,61 @@
+.safeAreaVisita { flex: 1; background-color: #F4F5F7; display: flex; flex-direction: column; min-height: 100vh; }
+.centerContainer { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; }
+.loadingSpinnerVisita { font-size: 30px; animation: spin 1.5s linear infinite; }
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+.headerVisita { background-color: #000; padding: 20px; display: flex; align-items: center; border-bottom: 5px solid #FFD500; }
+.backButton { background: none; border: none; cursor: pointer; margin-right: 15px; }
+.backButtonText { color: #FFD500; font-weight: bold; font-size: 16px; }
+.headerTitleVisita { color: #FFD500; font-size: 20px; font-weight: 900; }
+
+.contentVisita { padding: 20px; flex: 1; overflow-y: auto; padding-bottom: 40px; }
+.pdvHeaderVisita { margin-bottom: 25px; text-align: center; }
+.pdvNameVisita { font-size: 24px; font-weight: 900; color: #000; display: block; }
+.pdvIdVisita { font-size: 14px; color: #6c757d; font-weight: bold; }
+
+.sectionVisita { margin-bottom: 30px; }
+.sectionTitleVisita { font-size: 18px; font-weight: bold; color: #000; margin-bottom: 5px; }
+.sectionSubTitleVisita { font-size: 14px; color: #6c757d; margin-bottom: 15px; display: block; }
+
+/* CONTADORES */
+.contadorCard { background: #FFF; border-radius: 12px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #D1D5DB; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+.contadorTitle { font-size: 15px; font-weight: bold; color: #000; flex: 1; }
+.contadorControls { display: flex; align-items: center; }
+.btnControl { width: 40px; height: 40px; border-radius: 20px; border: 1px solid #D1D5DB; background: #FFF; font-size: 20px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; }
+.contadorInput { width: 55px; height: 40px; border: 1px solid #D1D5DB; text-align: center; font-size: 18px; font-weight: 900; margin: 0 8px; border-radius: 6px; appearance: textfield; -webkit-appearance: textfield; }
+.contadorInput::-webkit-inner-spin-button { appearance: none; -webkit-appearance: none; }
+
+/* PENDENCIAS (O CADERNO DIGITAL) */
+.notebookTitleRow { display: flex; align-items: center; margin-bottom: 5px; }
+.notebookIcon { font-size: 20px; margin-right: 8px; }
+.sectionTitleFuturistic { font-size: 16px; font-weight: 900; letter-spacing: 0.5px; }
+.novaPendenciaRow { display: flex; margin-bottom: 20px; }
+.novaPendenciaInput { flex: 1; padding: 12px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 15px; }
+.btnAddPendencia { background: #000; border-radius: 8px; margin-left: 10px; padding: 0 15px; border: none; cursor: pointer; }
+.btnAddPendenciaText { color: #FFD500; font-weight: bold; }
+
+.pendenciaCard { display: flex; background: #FFF; border-radius: 10px; border: 1px solid #D1D5DB; margin-bottom: 10px; overflow: hidden; }
+.pendenciaCardResolvido { background: #F0F0F0; opacity: 0.7; }
+.pendenciaContent { flex: 1; padding: 15px; display: flex; align-items: center; cursor: pointer; }
+.statusIndicator { width: 12px; height: 12px; border-radius: 6px; margin-right: 15px; }
+.statusPendente { background: #FF4500; }
+.statusResolvido { background: #28a745; }
+.pendenciaTexto { font-size: 15px; font-weight: 600; color: #000; }
+.pendenciaTextoResolvido { text-decoration: line-through; color: #6c757d; }
+.btnApagarPendencia { padding: 15px; border: none; background: none; border-left: 1px solid #EEE; cursor: pointer; }
+
+/* MODAL PROFISSIONAL */
+.modalOverlayPro { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 9999; padding: 20px; }
+.modalBoxPro { background: #FFF; width: 100%; max-width: 350px; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.4); animation: modalScale 0.2s ease-out; }
+@keyframes modalScale { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modalHeaderPro { background: #000; padding: 15px; text-align: center; }
+.modalHeaderPro h3 { color: #FFD500; margin: 0; font-size: 18px; font-weight: 900; }
+.modalBodyPro { padding: 25px 20px; text-align: center; }
+.modalBodyPro p { color: #333; font-size: 16px; font-weight: 600; white-space: pre-line; }
+.modalFooterPro { display: flex; border-top: 1px solid #EEE; }
+.btnModalConfirm, .btnModalCancel { flex: 1; padding: 18px; border: none; font-weight: 900; cursor: pointer; }
+.btnModalConfirm { background: #FFD500; color: #000; }
+.btnModalCancel { background: #F4F5F7; color: #666; }
+
+.finishButton { background: #FFD500; color: #000; padding: 18px; border-radius: 30px; border: none; font-weight: 900; width: 100%; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+.finishButtonDisabled { background: #E5C000; opacity: 0.7; }

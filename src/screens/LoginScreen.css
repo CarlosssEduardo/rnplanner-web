@@ -1,0 +1,313 @@
+.loginSafeArea {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #F4F5F7;
+  position: relative;
+  overflow: hidden;
+}
+
+.bgHexagon {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background-color: rgba(200, 200, 200, 0.1);
+  transform: rotate(45deg);
+  border-radius: 20px;
+  pointer-events: none;
+}
+
+.loginContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 80px;
+  position: relative;
+  z-index: 2;
+}
+
+.logoSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.hexagonBorder {
+  width: 130px;
+  height: 130px;
+  background-color: #E5B800;
+  transform: rotate(45deg);
+  border-radius: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.3);
+}
+
+.hexagonInner {
+  width: 115px;
+  height: 115px;
+  background-color: #2A2A2A;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.beeEmoji {
+  font-size: 55px;
+  transform: rotate(-45deg);
+}
+
+.titleRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 40px;
+}
+
+.titleBees {
+  font-size: 36px;
+  font-weight: 900;
+  color: #000000;
+  letter-spacing: -1px;
+}
+
+.titleForce {
+  font-size: 36px;
+  font-weight: 300;
+  color: #000000;
+  margin-left: 8px;
+}
+
+.bottomWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bottomCard {
+  width: 100%;
+  max-width: 600px;
+  background-color: #FFFFFF;
+  border-radius: 30px 30px 0 0;
+  padding: 40px 30px 30px 30px;
+  box-shadow: 0px -5px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.welcomeText {
+  font-size: 22px;
+  font-weight: 900;
+  color: #000000;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.instructionText {
+  font-size: 16px;
+  color: #4A4A4A;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.yellowButton {
+  background-color: #FFD500;
+  width: 100%;
+  padding: 18px 0;
+  border-radius: 30px;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  transition: opacity 0.2s;
+}
+
+.yellowButton:active {
+  opacity: 0.8;
+}
+
+.yellowButtonText {
+  color: #000000;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.footerSection {
+  margin-bottom: 20px;
+}
+
+.versionText {
+  color: #4A4A4A;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* =========================================
+   INPUT DO SETOR (LOGIN)
+   ========================================= */
+.loginInputSetor {
+  width: 100%;
+  padding: 16px;
+  margin: 15px 0 25px 0;
+  background-color: #f8f9fa;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: 800;
+  text-align: center;
+  color: #333;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.loginInputSetor:focus {
+  border-color: #FFD500;
+  background-color: #fff;
+  box-shadow: 0 0 0 4px rgba(255, 213, 0, 0.15);
+}
+
+.loginInputSetor::placeholder {
+  color: #adb5bd;
+  font-weight: 500;
+}
+
+/* =========================================
+   NOVA CAIXA DE SETOR (TÁTICA E ESCURA)
+   ========================================= */
+.boldText {
+  font-weight: 900;
+  color: #1a1a1a;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  letter-spacing: 0.5px;
+}
+
+.inputActionRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+
+.loginInputSetor {
+  flex: 1;
+  max-width: 200px;
+  padding: 15px 20px;
+  background-color: #2a2a2a; /* Fundo Escuro Premium */
+  border: 2px solid #FFD500; /* Borda Amarela Destaque */
+  border-radius: 12px;
+  font-size: 24px;
+  font-weight: 900;
+  color: #FFD500; /* Texto do número em Amarelo */
+  text-align: center;
+  transition: all 0.3s ease;
+  outline: none;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.loginInputSetor:focus {
+  background-color: #1a1a1a;
+  box-shadow: 0 0 0 5px rgba(255, 213, 0, 0.3);
+}
+
+.loginInputSetor::placeholder {
+  color: #888;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* Opcional: Remover as setinhas nativas do input de número se você usar type="number" depois */
+.loginInputSetor::-webkit-inner-spin-button, 
+.loginInputSetor::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+.goButton {
+  background-color: #FFD500;
+  border: none;
+  border-radius: 12px;
+  width: 62px;
+  height: 62px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  color: #000;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  box-shadow: 0 4px 15px rgba(255, 213, 0, 0.3);
+}
+
+.goButton:hover:not(:disabled) {
+  background-color: #e6c200;
+}
+
+.goButton:active:not(:disabled) {
+  transform: scale(0.92);
+}
+
+.goButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* =========================================
+   TOAST DE ERRO (ALERTA CUSTOMIZADO)
+   ========================================= */
+.toastErroLogin {
+  position: absolute;
+  top: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1a1a1a;
+  border-left: 5px solid #ff4444; /* Detalhe vermelho de alerta */
+  padding: 16px 20px;
+  border-radius: 8px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  z-index: 9999;
+  width: 90%;
+  max-width: 400px;
+  animation: slideDownToast 0.4s ease-out forwards;
+}
+
+.toastIcon {
+  font-size: 24px;
+}
+
+.toastText {
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+  font-family: inherit;
+}
+
+/* Animação para a notificação cair do teto */
+@keyframes slideDownToast {
+  0% { 
+    top: -80px; 
+    opacity: 0; 
+  }
+  100% { 
+    top: 25px; 
+    opacity: 1; 
+  }
+}

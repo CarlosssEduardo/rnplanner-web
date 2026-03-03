@@ -1,0 +1,240 @@
+.resumoContainer {
+  flex: 1;
+  background-color: #121212;
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.loadingContainer {
+  justify-content: center;
+  align-items: center;
+}
+
+.loadingSpinner {
+  font-size: 40px;
+  animation: spin 1.5s linear infinite;
+}
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+.scrollArea {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+  padding-bottom: 100px; /* Espaço para o footer fixo */
+}
+
+.header {
+  margin-bottom: 30px;
+  margin-top: 10px;
+}
+
+.headerTitle {
+  font-size: 32px;
+  font-weight: 900;
+  color: #FFD500;
+  margin-bottom: 5px;
+  margin-top: 0;
+}
+
+.headerDate {
+  font-size: 16px;
+  color: #28a745;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: bold;
+  color: #FFFFFF;
+  margin-bottom: 15px;
+  margin-top: 10px;
+}
+
+.sectionSubtitle {
+  font-size: 14px;
+  color: #A0A0A0;
+  margin-bottom: 20px;
+  margin-top: -10px;
+  display: block;
+}
+
+.todayCard {
+  background-color: #1E1E1E;
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 30px;
+  border: 1px solid #333;
+}
+
+.visitasRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #333;
+}
+
+.visitasLabel {
+  color: #A0A0A0;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.visitasValue {
+  color: #FFFFFF;
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 36px;
+}
+
+.visitasTotal {
+  color: #A0A0A0;
+  font-size: 16px;
+  font-weight: normal;
+}
+
+.ringsRow {
+  display: flex;
+  justify-content: space-around;
+}
+
+.ringContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ringCircle {
+  width: 80px;
+  height: 80px;
+  border-radius: 40px;
+  border-width: 4px;
+  border-style: solid;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+  background-color: #000;
+}
+
+.ringIcon {
+  font-size: 20px;
+  margin-bottom: 2px;
+}
+
+.ringValue {
+  color: #FFFFFF;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.ringLabel {
+  color: #A0A0A0;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.ringPercent {
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 2px;
+}
+
+.statsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.statCard {
+  background-color: #1E1E1E;
+  width: 48%; /* Exatamente como no React Native para 2 colunas */
+  border-radius: 15px;
+  padding: 15px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #333;
+  box-sizing: border-box;
+}
+
+.iconContainer {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.statIcon {
+  font-size: 20px;
+}
+
+.statTextWrapper {
+  flex: 1;
+  overflow: hidden;
+}
+
+.statValue {
+  color: #FFFFFF;
+  font-size: 18px;
+  font-weight: 900;
+  display: block;
+}
+
+.statTitle {
+  color: #A0A0A0;
+  font-size: 12px;
+  display: -webkit-box;
+  line-clamp:2;
+  -webkit-line-clamp: 2; /* Equivalente ao numberOfLines={2} do RN */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.footerSpacing {
+  height: 20px; /* Menor que no RN, pois o padding da scrollArea já segura a barra */
+}
+
+.fixedFooter {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
+  max-width: 560px; /* Para garantir que não cresça infinito no PC */
+  z-index: 10;
+}
+
+.closeButton {
+  background-color: #FFD500;
+  width: 100%;
+  padding: 18px 0;
+  border-radius: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.5);
+  transition: transform 0.1s ease;
+}
+
+.closeButton:active {
+  transform: scale(0.98);
+}
+
+.closeButtonText {
+  color: #121212;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}

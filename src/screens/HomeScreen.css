@@ -1,0 +1,271 @@
+/* =========================================================================
+   DESIGN EXATO DO MOBILE (React Native) -> PORTADO PARA O WEB
+   ========================================================================= */
+
+.home-safe-area {
+    background-color: #F4F5F7;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: sans-serif;
+}
+
+/* 🔥 BACKGROUND DE COLMEIA NO HEADER 🔥 */
+.headerArea {
+    background-color: #000000;
+    padding: 30px 20px 25px 20px;
+    border-bottom: 5px solid #FFD500;
+    position: relative;
+    overflow: hidden;
+}
+
+.bgColmeiaContainer {
+    position: absolute;
+    top: 0; bottom: 0; left: 0; right: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.honeycombHex {
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    transform: rotate(45deg);
+    border-radius: 20px;
+    border: 2px solid rgba(229, 184, 0, 0.1);
+}
+
+.headerContentWrapper {
+    position: relative;
+    z-index: 1;
+}
+
+.headerTitle {
+    color: #FFD500;
+    font-size: 26px;
+    font-weight: 900;
+    margin: 0 0 15px 0;
+}
+
+/* Card Iniciar Jornada (Igual ao Mobile) */
+.iniciarJornadaCard {
+    background-color: #1A1A1A;
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #E5B800;
+}
+
+.iniciarJornadaIcon { font-size: 35px; margin-right: 10px; }
+.iniciarJornadaTextos { flex: 1; }
+.iniciarJornadaTitle { color: #FFD500; font-size: 18px; font-weight: bold; margin: 0; }
+.iniciarJornadaDesc { color: #AAA; font-size: 12px; margin: 2px 0 0 0; }
+.iniciarJornadaBtn { background-color: #FFD500; padding: 10px 15px; border-radius: 20px; border: none; cursor: pointer; }
+.iniciarJornadaBtnText { color: #000; font-weight: 900; font-size: 13px; }
+
+/* Dashboard Ativo (Igual ao Mobile) */
+.activeHeaderContainer { margin-bottom: 15px; }
+.headerSubtitle { color: #FFF; font-size: 18px; font-weight: 700; margin: 0 0 10px 0; }
+
+.botoes3Row { display: flex; justify-content: space-between; gap: 8px; width: 100%; }
+.btnAcaoAmarelo, .btnAcaoAzul, .btnAcaoVermelho {
+    flex: 1; padding: 10px 0; border-radius: 10px; border: 1px solid;
+    display: flex; align-items: center; justify-content: center; background-color: #333; cursor: pointer;
+}
+.btnAcaoAmarelo { border-color: #FFD500; }
+.btnAcaoTextAmarelo { color: #FFD500; font-weight: bold; font-size: 10px; }
+.btnAcaoAzul { border-color: #0d6efd; }
+.btnAcaoTextAzul { color: #0d6efd; font-weight: bold; font-size: 10px; }
+.btnAcaoVermelho { background-color: #dc3545; border-color: #dc3545; }
+.btnAcaoTextVermelho { color: #FFF; font-weight: bold; font-size: 10px; }
+
+.metasWrapper { margin-top: 10px; }
+.metaContainer { margin-bottom: 10px; }
+.metaHeader { display: flex; justify-content: space-between; margin-bottom: 5px; }
+.metaLabel, .metaText { color: #FFF; font-size: 13px; font-weight: bold; }
+.successText { color: #28a745; }
+.progressBarBackground { height: 8px; background-color: #333; border-radius: 4px; overflow: hidden; }
+.progressBarFill { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+
+/* 🔥 ESTADO DE REPOUSO (Abelha Dormindo - Mobile exato) 🔥 */
+.inactiveContainer {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 40px; background-color: #F4F5F7;
+}
+.inactiveEmoji { font-size: 60px; margin-bottom: 15px; }
+.inactiveTitle { font-size: 22px; font-weight: bold; color: #000; margin: 0 0 10px 0; }
+.inactiveDesc { font-size: 15px; color: #6c757d; text-align: center; margin: 0; }
+
+.mainContent { flex: 1; }
+
+/* 🔥 BARRA DE BUSCA FAKE (Abre o Modal) 🔥 */
+.searchBarContainer { padding: 16px 16px 10px 16px; }
+.fakeSearchBar {
+    background-color: #FFF; display: flex; align-items: center; width: 100%;
+    padding: 15px; border-radius: 30px; border: 1px solid #D1D5DB; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer;
+}
+.fakeSearchIcon { font-size: 18px; margin-right: 10px; }
+.fakeSearchPlaceholder { color: #888; font-size: 15px; text-align: left; }
+
+.quickFilterRow { display: flex; padding: 0 16px 15px 16px; gap: 10px; }
+.quickFilterBtn {
+    flex: 1; padding: 12px 0; background-color: #FFF; border-radius: 20px;
+    border: 1px solid #D1D5DB; display: flex; align-items: center; justify-content: center; cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.quickFilterBtnActive { background-color: #E8F5E9; border-color: #28a745; }
+.quickFilterText { color: #6c757d; font-weight: bold; font-size: 13px; }
+.quickFilterTextActive { color: #28a745; }
+
+/* LISTA DE CARDS */
+.listContainer { padding: 0 16px 40px 16px; }
+.cardPdv {
+    background-color: #FFF; border-radius: 12px; padding: 16px; margin-bottom: 16px;
+    border: 1px solid #D1D5DB; box-shadow: 0 3px 6px rgba(0,0,0,0.05); cursor: pointer;
+}
+.cardPdvConcluido { border: 2px solid #28a745; }
+.cardHeader { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.cardTitle { font-size: 18px; font-weight: bold; color: #000; flex: 1; margin-right: 10px; }
+.codigoText { font-size: 14px; color: #6c757d; font-weight: bold; background-color: #F4F5F7; padding: 4px 8px; border-radius: 6px; }
+.cardBody { margin-bottom: 15px; }
+.addressText { font-size: 14px; color: #6c757d; font-weight: 500; }
+.cardFooter { border-top: 1px solid #F4F5F7; padding-top: 12px; text-align: right; }
+.actionText { font-size: 14px; font-weight: bold; color: #000; }
+.actionTextConcluido { color: #28a745; }
+
+/* =========================================================================
+   ESTILOS DE MODAIS GRANDES (ESTILO BOTTOM SHEET DO MOBILE)
+   ========================================================================= */
+.modalOverlayPro {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: flex-end; z-index: 3000;
+}
+
+.modalFiltroContent {
+    background-color: #FFF; width: 100%; max-width: 500px;
+    border-radius: 25px 25px 0 0; padding: 25px; animation: slideUp 0.3s ease-out;
+}
+.modalPendenciasContent { height: 85vh; display: flex; flex-direction: column; }
+
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+.modalHeader { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+.modalTitle { font-size: 20px; font-weight: 900; color: #000; margin: 0; }
+.subTitlePendencias { font-size: 14px; color: #6c757d; margin-top: 2px; display: block; }
+.closeModalText { color: #dc3545; font-weight: bold; font-size: 14px; background: transparent; border: none; cursor: pointer; padding: 0; }
+
+/* Campos de Busca (16px para não dar zoom) */
+.searchInputModal {
+    background-color: #F4F5F7; border: 1px solid #D1D5DB; border-radius: 10px;
+    padding: 15px; font-size: 16px !important; color: #000; width: 100%; box-sizing: border-box; margin-bottom: 15px;
+}
+.labelFiltro { font-size: 14px; font-weight: bold; color: #6c757d; margin-bottom: 10px; display: block; }
+
+/* Grid de Dias do Filtro */
+.diasGrid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; }
+.diaBadge {
+    background-color: #F4F5F7; padding: 8px 15px; border-radius: 20px; border: 1px solid #D1D5DB;
+    color: #6c757d; font-weight: bold; cursor: pointer; font-size: 14px;
+}
+.diaBadgeActive { background-color: #FFD500; border-color: #FFD500; color: #000; }
+.aplicarFiltroButton { background-color: #000; padding: 18px; border-radius: 30px; color: #FFD500; font-weight: bold; font-size: 16px; width: 100%; border: none; cursor: pointer; }
+
+/* Rastreio (Entregas) */
+.novaPendenciaRow {
+  display: flex;
+  justify-content: center; /* 👈 Isso centraliza tudo na tela */
+  gap: 10px; /* 👈 Dá um respiro entre a caixa e o botão */
+  width: 100%;
+  margin-bottom: 20px;
+}
+.novaPendenciaInput { flex: 1; background-color: #FFF; border: 1px solid #D1D5DB; border-radius: 8px; padding: 12px; font-size: 16px !important; }
+.btnBuscaRastreio { background-color: #0d6efd !important; color: #FFF !important; }
+.btnAddPendencia { background-color: #000; padding: 0 20px; border-radius: 8px; color: #FFF; font-weight: bold; font-size: 14px; border: none; cursor: pointer; }
+
+.rastreioCardClean { background-color: #FFF; border-radius: 12px; padding: 20px; margin-top: 10px; border: 1px solid #E0E0E0; box-shadow: 0 3px 6px rgba(0,0,0,0.05); }
+.rastreioErroCard { border-color: #dc3545; background-color: #ffe6e6; }
+.rastreioPdvHeaderClean { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #F0F0F0; }
+.rastreioPdvNomeClean { font-size: 18px; font-weight: 900; color: #000; }
+.rastreioPdvIdClean { font-size: 14px; font-weight: bold; color: #666; background-color: #F5F5F5; padding: 4px 8px; border-radius: 6px; }
+
+.rastreioStatusBox { margin-bottom: 15px; display: flex; flex-direction: column; align-items: center; background-color: #F9F9F9; padding: 15px; border-radius: 8px; }
+.rastreioStatusText { font-size: 18px; font-weight: 900; letter-spacing: 0.5px; margin-bottom: 5px; }
+.rastreioSubStatus { font-size: 13px; color: #666; font-style: italic; text-align: center; }
+.statusGreen { color: #28a745; } .statusOrange { color: #FF8C00; } .statusTratamento { color: #0d6efd; } .statusDanger { color: #dc3545; }
+
+.rastreioInfoRowMotorista { margin-top: 10px; display: flex; flex-direction: column; align-items: center; border-top: 1px solid #F0F0F0; padding-top: 15px; }
+.rastreioLabelClean { font-size: 12px; color: #888; font-weight: bold; text-transform: uppercase; margin-bottom: 4px; }
+.rastreioDriverClean { font-size: 16px; font-weight: 700; color: #333; }
+
+/* Pendências Globais */
+.abasPendencias { display: flex; margin-bottom: 20px; background-color: #F4F5F7; border-radius: 10px; padding: 5px; }
+.abaBtn { flex: 1; padding: 12px; border-radius: 8px; border: none; background: transparent; color: #6c757d; font-weight: bold; font-size: 12px; cursor: pointer; }
+.abaBtnAtiva { background-color: #FFF; color: #000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.scrollPendencias { overflow-y: auto; flex: 1; padding-bottom: 20px; }
+.emptyPendenciasText { text-align: center; color: #AAA; font-style: italic; margin-top: 20px; font-size: 14px; }
+
+.pendenciaCardGlobal { background-color: #FFF; border: 1px solid #D1D5DB; border-radius: 10px; padding: 15px; margin-bottom: 15px; display: flex; flex-direction: column; }
+.pendenciaPdvInfo { display: flex; justify-content: space-between; border-bottom: 1px solid #F4F5F7; padding-bottom: 10px; margin-bottom: 10px; }
+.pendenciaPdvName { font-size: 15px; font-weight: 900; color: #000; }
+.pendenciaPdvId { font-size: 12px; font-weight: bold; color: #6c757d; background-color: #F4F5F7; padding: 2px 6px; border-radius: 4px; }
+.pendenciaTextoBox { display: flex; align-items: center; margin-bottom: 15px; }
+.statusIndicatorGlobal { width: 10px; height: 10px; border-radius: 5px; margin-right: 10px; flex-shrink: 0; }
+.statusPendente { background-color: #FF4500; } .statusResolvido { background-color: #28a745; }
+.pendenciaTexto { font-size: 15px; color: #000; flex: 1; }
+.pendenciaTextoRiscado { color: #6c757d; text-decoration: line-through; }
+.irParaPdvBtnAmarelo { align-self: flex-end; background-color: #FFD500; padding: 8px 15px; border-radius: 20px; border: none; font-size: 12px; font-weight: bold; color: #000; cursor: pointer; }
+
+/* Modais Pequenos (Alertas Reabrir/Finalizar) */
+.modalBoxPro { background: #FFF; width: 100%; max-width: 350px; border-radius: 20px; overflow: hidden; margin: auto; align-self: center; }
+.modalHeaderPro { background: #000; padding: 18px; text-align: center; border-bottom: 2px solid #FFD500;}
+.modalHeaderPro h3 { color: #FFD500; margin: 0; font-size: 18px; font-weight: 900; }
+.modalBodyPro { padding: 30px 20px; text-align: center; }
+.modalBodyPro p { color: #2D3748; font-size: 15px; font-weight: 600; line-height: 1.5; margin: 0; }
+.modalFooterPro { display: flex; border-top: 1px solid #EDF2F7; }
+.btnModalConfirm, .btnModalCancel { flex: 1; padding: 20px; border: none; font-weight: 900; font-size: 14px; cursor: pointer; }
+.btnModalConfirm { background: #FFD500; color: #000; }
+.btnModalCancel { background: #F7FAFC; color: #718096; }
+
+/* =========================================================================
+   ATUALIZAÇÕES CIRÚRGICAS - TEMA PREMIUM E CARTÃO
+   ========================================================================= */
+
+/* 1. Painel de Vidro Dourado (Glassmorphism) */
+.dashboard-card-glass {
+    margin-bottom: 15px;
+    background: linear-gradient(135deg, rgba(30,30,30,0.95) 0%, rgba(10,10,10,0.98) 100%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 213, 0, 0.3);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5), inset 0 0 15px rgba(255, 213, 0, 0.05);
+    border-radius: 16px;
+    padding: 20px;
+}
+.dashboard-card-glass .metaContainer { margin-bottom: 15px; }
+.dashboard-card-glass .metaContainer:last-child { margin-bottom: 0; }
+
+/* 2. Borda amarela na lateral esquerda do cartão */
+.cardPdv {
+    border-left: 6px solid #FFD500;
+    overflow: hidden;
+}
+
+/* 3. Botão Iniciar Visita Destacado e Chamativo */
+.btnIniciarVisitaDestaque {
+    background: linear-gradient(90deg, #FFD500, #FBB03B);
+    color: #000;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: 900;
+    font-size: 13px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(255, 213, 0, 0.4);
+    transition: transform 0.1s;
+}
+.btnIniciarVisitaDestaque:active {
+    transform: scale(0.95);
+}
