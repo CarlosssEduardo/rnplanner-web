@@ -63,11 +63,15 @@ const HomeScreen = () => {
   // ==========================================
   // 🔥 UTILITÁRIO: LIMPAR TEXTO JSON (A MÁGICA ADICIONADA AQUI)
   // ==========================================
-  const formatarTextoPendencia = (texto) => {
+  const formatarTextoPendencia = (texto, statusGlobal) => {
     try {
       const parsed = JSON.parse(texto);
       if (Array.isArray(parsed)) {
-        // Junta todas as pendências daquela visita com bolinhas
+        if (statusGlobal === 'PENDENTE') {
+          // Filtra para mostrar APENAS o que ainda falta resolver
+          const aindaPendentes = parsed.filter(p => p.status !== 'RESOLVIDO');
+          return aindaPendentes.map(p => `• ${p.texto}`).join("  |  ");
+        }
         return parsed.map(p => `• ${p.texto}`).join("  |  ");
       }
       return parsed.texto || texto;
@@ -602,7 +606,7 @@ const HomeScreen = () => {
                                       <div className={`statusIndicatorGlobal ${pendencia.status === 'RESOLVIDO' ? 'statusResolvido' : 'statusPendente'}`}></div>
                                       {/* 🔥 FUNÇÃO APLICADA AQUI EMBAIXO: */}
                                       <span className={`pendenciaTexto ${pendencia.status === 'RESOLVIDO' ? 'pendenciaTextoRiscado' : ''}`}>
-                                        {formatarTextoPendencia(pendencia.texto)}
+                                        {formatarTextoPendencia(pendencia.texto, pendencia.status)}
                                       </span>
                                   </div>
                                   
