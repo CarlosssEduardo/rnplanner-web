@@ -34,33 +34,19 @@ const VisitaScreen = () => {
   // 🛠️ PASSO 2: Preparar a Tela de Detalhe (Integrado)
   useEffect(() => {
     const arrancarVisita = async () => {
-      // Se não tem PDV nem Visita, não tem o que carregar
       if (!pdvId && !visitaId) return;
 
       try {
         setIsLoading(true);
         let dadosVisita;
 
-        // 🔥 MUDANÇA 2: A lógica corrigida para não matar o fluxo normal
+        // 1. Busca a visita correta de forma limpa
         if (isModoPendencias && visitaId) {
-          // Busca a visita que já existe para não zerar as pendências
           dadosVisita = await obterVisitaPorId(visitaId);
-          
-          // Mantemos a sua lógica de buscar os itens "desembrulhados"
-          const itens = await obterItensPendentes(visitaId);
-          const itensFormatados = itens.map(t => ({ 
-            id: Math.random().toString(), 
-            texto: t, 
-            status: 'PENDENTE' 
-          }));
-          
-          setPendencias(itensFormatados);
-          
         } else if (pdvId) {
-          // Se é uma visita nova (Torneira 1 via PDV), inicia normal
           dadosVisita = await iniciarVisita(pdvId);
         } else {
-          return; // Prevenção de erro
+          return;
         }
 
         setVisita(dadosVisita);
@@ -68,8 +54,9 @@ const VisitaScreen = () => {
         setQtdOfertas(dadosVisita.qtdOfertas || 0);
         setQtdMissoes(dadosVisita.qtdMissoes || 0);
 
-        // Se a visita já tinha uma observação salva (fluxo normal)
-        if (dadosVisita.observacao && !isModoPendencias) {
+        // 🔥 2. O VILÃO MORREU AQUI: Removi o "!isModoPendencias"
+        // Agora ele sempre lê o seu JSON, não importa de qual tela você venha!
+        if (dadosVisita.observacao) {
           try {
             const listaSalva = JSON.parse(dadosVisita.observacao);
             setPendencias(Array.isArray(listaSalva) ? listaSalva : []);
