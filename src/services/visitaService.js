@@ -3,6 +3,16 @@ import api from './api';
 // 🔥 A URL Central do seu Servidor na Azure (Evita o erro de BASE_URL is not defined)
 const BASE_URL = 'https://rnplanner-api-ekc2hratcvgqhgc5.brazilsouth-01.azurewebsites.net';
 
+export const salvarNoHub = async (dados) => {
+  try {
+    const response = await api.post('/lancamento-manual/salvar', dados);
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao salvar no Hub:", error);
+    throw error;
+  }
+};
+
 export const iniciarVisita = async (pdvId) => {
   const response = await api.post(`/visitas/iniciar/${pdvId}`);
   return response.data;
@@ -19,12 +29,13 @@ export const finalizarVisita = async (visitaId, anotacao, tasks, ofertas, missoe
 };
 
 // 🔥 FUNÇÃO BLINDADA E CONECTADA AO NOVO CONTROLLER (VisitasController)
+// 🔥 CORREÇÃO: Batendo na porta certa do DashboardController!
 export const obterDashboardGeral = async (setorParam) => {
   try {
     const setor = setorParam || localStorage.getItem('setorAtivo');
     
-    // Rota alinhada com o @GetMapping("/dashboard/{setor}") do Back-end
-    const response = await fetch(`${BASE_URL}/visitas/dashboard/${setor}`);
+    // Mudamos de /visitas/dashboard para /dashboard/resumo-do-dia/setor/
+    const response = await fetch(`${BASE_URL}/dashboard/resumo-do-dia/setor/${setor}`);
     
     if (!response.ok) return { pdvsVisitadosIds: [], tasksTotal: 0, ofertasTotal: 0, missoesTotal: 0 };
     return await response.json();
@@ -34,12 +45,12 @@ export const obterDashboardGeral = async (setorParam) => {
   }
 };
 
-// 🔥 O ERRO 404 MORRE AQUI: Rota alinhada e recebendo o setor de forma segura
+// 🔥 CORREÇÃO: Alinhado com o @GetMapping("/resumo-mensal/setor/{setor}")
 export const obterDashboardMes = async (setorParam) => {
   try {
     const setor = setorParam || localStorage.getItem('setorAtivo');
     
-    const response = await fetch(`${BASE_URL}/visitas/dashboard/mes/${setor}`);
+    const response = await fetch(`${BASE_URL}/dashboard/resumo-mensal/setor/${setor}`);
     if (!response.ok) throw new Error("Erro ao buscar o dashboard do mês");
     return await response.json();
   } catch (error) {
