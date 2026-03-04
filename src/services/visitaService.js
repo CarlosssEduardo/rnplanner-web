@@ -28,8 +28,6 @@ export const finalizarVisita = async (visitaId, anotacao, tasks, ofertas, missoe
   return response.data;
 };
 
-// 🔥 FUNÇÃO BLINDADA E CONECTADA AO NOVO CONTROLLER (VisitasController)
-// 🔥 CORREÇÃO: Batendo na porta certa do DashboardController!
 export const obterDashboardGeral = async (setorParam) => {
   try {
     const setor = setorParam || localStorage.getItem('setorAtivo');
@@ -99,4 +97,15 @@ export const deletarPendenciaManual = async (id) => {
   await fetch(`${BASE_URL}/pendencias-manuais/deletar/${id}`, {
     method: 'DELETE'
   });
+};
+
+// Adicione esta exportação no seu arquivo de serviços
+export const obterItensPendentes = async (visitaId) => {
+  try {
+    const response = await api.get(`/visitas/${visitaId}/itens-pendentes`);
+    return response.data; // O Java vai devolver ['Boleto', 'Verificar TCC']
+  } catch (error) {
+    console.error("Erro ao buscar itens da pendência:", error);
+    return [];
+  }
 };

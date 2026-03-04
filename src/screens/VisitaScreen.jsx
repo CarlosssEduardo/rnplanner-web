@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './VisitaScreen.css';
 import { iniciarVisita, finalizarVisita } from '../services/visitaService';
+import { obterItensPendentes } from '../services/visitaService'; // 🔥 Importado do Passo 1
 
 const COLORS = { 
   YELLOW: '#FFD500', BLACK: '#000000', WHITE: '#FFFFFF', 
@@ -11,9 +12,10 @@ const COLORS = {
 const VisitaScreen = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { pdvId, pdvNome, modo } = location.state || {};
   
-  // Identifica se estamos apenas gerindo pendências
+  // 🔥 ADIÇÃO: Agora pegamos o visitaId que vem do clique no Eduardo
+  const { pdvId, pdvNome, modo, visitaId } = location.state || {};
+  
   const isModoPendencias = modo === 'PENDENCIAS_ONLY';
 
   const [visita, setVisita] = useState(null);
@@ -29,18 +31,43 @@ const VisitaScreen = () => {
 
   const [modal, setModal] = useState({ visible: false, title: '', message: '', onConfirm: null, type: 'confirm' });
 
+  // 🛠️ PASSO 2: Preparar a Tela de Detalhe (Integrado)
   useEffect(() => {
     const arrancarVisita = async () => {
-      if (!pdvId) return;
+      // Se não tem PDV nem Visita, não tem o que carregar
+      if (!pdvId && !visitaId) return;
+
       try {
         setIsLoading(true);
-        const dadosVisita = await iniciarVisita(pdvId);
+        let dadosVisita;
+
+        if (isModoPendencias && visitaId) {
+          // 🔥 Se veio das Pendências, buscamos os itens que o Java "desembrulhou"
+          const itens = await obterItensPendentes(visitaId);
+          
+          // Converte a lista de textos do Java para o formato de cards do seu Front
+          const itensFormatados = itens.map(t => ({ 
+            id: Math.random().toString(), 
+            texto: t, 
+            status: 'PENDENTE' 
+          }));
+          
+          setPendencias(itensFormatados);
+          
+          // Mock para o cabeçalho não quebrar
+          dadosVisita = { id: visitaId, pdv: { nome: pdvNome } };
+        } else {
+          // Se é uma visita nova, segue o fluxo normal
+          dadosVisita = await iniciarVisita(pdvId);
+        }
+
         setVisita(dadosVisita);
         setQtdTasks(dadosVisita.qtdTasks || 0);
         setQtdOfertas(dadosVisita.qtdOfertas || 0);
         setQtdMissoes(dadosVisita.qtdMissoes || 0);
 
-        if (dadosVisita.observacao) {
+        // Se a visita já tinha uma observação salva (fluxo normal)
+        if (dadosVisita.observacao && !isModoPendencias) {
           try {
             const listaSalva = JSON.parse(dadosVisita.observacao);
             setPendencias(Array.isArray(listaSalva) ? listaSalva : []);
@@ -51,11 +78,11 @@ const VisitaScreen = () => {
           }
         }
       } catch (error) {
-        setModal({ visible: true, title: 'Erro', message: 'Falha ao iniciar atendimento.', type: 'alert', onConfirm: () => navigate(-1) });
+        setModal({ visible: true, title: 'Erro', message: 'Falha ao carregar dados.', type: 'alert', onConfirm: () => navigate(-1) });
       } finally { setIsLoading(false); }
     };
     arrancarVisita();
-  }, [pdvId, navigate]);
+  }, [pdvId, visitaId, navigate, isModoPendencias]);
 
   const handleFinalizar = () => {
     if (isModoPendencias) {
@@ -81,10 +108,7 @@ const VisitaScreen = () => {
   const executarFinalizacao = async () => {
     try {
       setIsSaving(true);
-      
-      // 🔥 CORREÇÃO 1: Voltamos a usar o JSON. O React PRECISA dele para lembrar quem está resolvido ou não!
       const obs = pendencias.length > 0 ? JSON.stringify(pendencias) : '';
-      
       await finalizarVisita(visita.id, obs, qtdTasks, qtdOfertas, qtdMissoes);
       
       setModal({ 
