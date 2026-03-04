@@ -63,23 +63,27 @@ const HomeScreen = () => {
   // ==========================================
   // 🔥 UTILITÁRIO: LIMPAR TEXTO JSON (A MÁGICA ADICIONADA AQUI)
   // ==========================================
-  const formatarTextoPendencia = (texto, statusGlobal) => {
+  const formatarTextoPendencia = (texto) => {
     try {
       const parsed = JSON.parse(texto);
       if (Array.isArray(parsed)) {
-        if (statusGlobal === 'PENDENTE') {
-          // Filtra para mostrar APENAS o que ainda falta resolver
-          const aindaPendentes = parsed.filter(p => p.status !== 'RESOLVIDO');
-          return aindaPendentes.map(p => `• ${p.texto}`).join("  |  ");
+        
+        // 🔥 A MÁGICA: Corta fora da lista tudo o que já tem o status 'RESOLVIDO'
+        const itensPendentes = parsed.filter(p => p.status !== 'RESOLVIDO');
+        
+        // Se ainda sobrou algo para resolver, ele mostra. Se não, mostra o check verde!
+        if (itensPendentes.length > 0) {
+          return itensPendentes.map(p => `• ${p.texto}`).join("  |  ");
+        } else {
+          return "✅ Todos os itens resolvidos!";
         }
-        return parsed.map(p => `• ${p.texto}`).join("  |  ");
+        
       }
       return parsed.texto || texto;
     } catch (e) {
       return texto;
     }
   };
-
   // ==========================================
   // EFEITOS DE CICLO DE VIDA E UTILIDADES
   // ==========================================
