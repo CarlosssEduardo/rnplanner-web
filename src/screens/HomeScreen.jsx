@@ -614,8 +614,8 @@ const HomeScreen = () => {
                                             <button className="btnIniciarVisitaDestaque" style={{ padding: '8px 12px', fontSize: '12px', minWidth: 'auto' }} onClick={() => handleAcaoManual(pendencia.id, 'resolver')}>✅ RESOLVER</button>
                                         </>
                                     ) : (
-                                        <button className="irParaPdvBtnAmarelo" onClick={() => { setModalPendenciasVisible(false); navigate('/visita', { state: { pdvId: pendencia.pdvId, pdvNome: pendencia.pdvNome, modo: 'PENDENCIAS_ONLY' } }); }}>
-                                            ABRIR VISITA ➔
+                                        <button className="irParaPdvBtnAmarelo" onClick={() => { setModalPendenciasVisible(false); navigate('/visita', { state: { pdvId: pendencia.pdvId, pdvNome: pendencia.pdvNome, modo: 'PENDENCIAS_ONLY', visitaId: pendencia.id } }); }}>
+                                          ABRIR VISITA ➔
                                         </button>
                                     )}
                                   </div>
