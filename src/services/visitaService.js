@@ -99,6 +99,11 @@ export const deletarPendenciaManual = async (id) => {
   });
 };
 
+export const obterVisitaPorId = async (id) => {
+  const response = await api.get(`/visitas/${id}`);
+  return response.data;
+};
+
 // Adicione esta exportação no seu arquivo de serviços
 export const obterItensPendentes = async (visitaId) => {
   try {

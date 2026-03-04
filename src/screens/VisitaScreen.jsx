@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './VisitaScreen.css';
-import { iniciarVisita, finalizarVisita } from '../services/visitaService';
-import { obterItensPendentes } from '../services/visitaService'; // 🔥 Importado do Passo 1
+// 🔥 MUDANÇA 1: Importamos a função obterVisitaPorId
+import { iniciarVisita, finalizarVisita, obterItensPendentes, obterVisitaPorId } from '../services/visitaService'; 
 
 const COLORS = { 
   YELLOW: '#FFD500', BLACK: '#000000', WHITE: '#FFFFFF', 
@@ -41,11 +41,13 @@ const VisitaScreen = () => {
         setIsLoading(true);
         let dadosVisita;
 
+        // 🔥 MUDANÇA 2: A lógica corrigida para não matar o fluxo normal
         if (isModoPendencias && visitaId) {
-          // 🔥 Se veio das Pendências, buscamos os itens que o Java "desembrulhou"
-          const itens = await obterItensPendentes(visitaId);
+          // Busca a visita que já existe para não zerar as pendências
+          dadosVisita = await obterVisitaPorId(visitaId);
           
-          // Converte a lista de textos do Java para o formato de cards do seu Front
+          // Mantemos a sua lógica de buscar os itens "desembrulhados"
+          const itens = await obterItensPendentes(visitaId);
           const itensFormatados = itens.map(t => ({ 
             id: Math.random().toString(), 
             texto: t, 
@@ -54,11 +56,11 @@ const VisitaScreen = () => {
           
           setPendencias(itensFormatados);
           
-          // Mock para o cabeçalho não quebrar
-          dadosVisita = { id: visitaId, pdv: { nome: pdvNome } };
-        } else {
-          // Se é uma visita nova, segue o fluxo normal
+        } else if (pdvId) {
+          // Se é uma visita nova (Torneira 1 via PDV), inicia normal
           dadosVisita = await iniciarVisita(pdvId);
+        } else {
+          return; // Prevenção de erro
         }
 
         setVisita(dadosVisita);
