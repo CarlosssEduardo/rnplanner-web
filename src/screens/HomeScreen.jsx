@@ -36,15 +36,14 @@ const HomeScreen = () => {
     tasksNabTotal: 0, 
     tasksMktTotal: 0,
     compradoresTotal: 0,
-    // 🔥 NOVAS GAVETAS DE METAS DINÂMICAS (Com valores padrão iniciais)
     metaTasksDia: 37,
     metaMissoesDia: 10,
     metaOfertasDia: 10,
     metaCompradorDia: 1,
-    metaCompraDia: 10,
-    metaCervejaDia: 9,
-    metaNabDia: 9,
-    metaMktDia: 9
+    metaTasksCompraDia: 10,
+    metaTasksCervejaDia: 9,
+    metaTasksNabDia: 9,
+    metaTasksMktDia: 9
   });
   const [pendenciasGlobais, setPendenciasGlobais] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -69,7 +68,7 @@ const HomeScreen = () => {
   const [isLoadingRastreio, setIsLoadingRastreio] = useState(false);
   const [buscouRastreio, setBuscouRastreio] = useState(false);
 
-  // Estados Hub de Execução (Iniciados com 0 para os contadores)
+  // Estados Hub de Execução
   const [modalManualVisible, setModalManualVisible] = useState(false);
   const [formManual, setFormManual] = useState({ 
     ofertas: 0, missoes: 0, pendencia: '',
@@ -237,7 +236,7 @@ const HomeScreen = () => {
       showToast("Hub de Execução atualizado com sucesso! 🚀", "success");
     } catch (error) {
       console.error(error);
-      showToast("Erro ao salvar! Verifique se o Back-end está online.", "error");
+      showToast("Erro ao salvar!", "error");
     } finally {
       setIsSavingManual(false);
     }
@@ -369,7 +368,6 @@ const HomeScreen = () => {
                 {!isLoading && (
                   <div className="dashboard-card-glass">
                     
-                    {/* 🔥 CÁLCULO PERFORMANCE 100% DINÂMICO (Soma as Metas Reais) */}
                     {renderGlobalProgressBar(
                       (dashboard.tasksTotal + dashboard.ofertasTotal + dashboard.missoesTotal + (dashboard.compradoresTotal || 0)), 
                       (dashboard.metaTasksDia + dashboard.metaMissoesDia + dashboard.metaOfertasDia + dashboard.metaCompradorDia)
@@ -377,7 +375,6 @@ const HomeScreen = () => {
 
                     <hr style={{ borderColor: 'rgba(255,255,255,0.1)', margin: '15px 0' }}/>
                     
-                    {/* 🔥 BARRAS TOTAIS DINÂMICAS */}
                     {renderProgressBar(dashboard.tasksTotal, dashboard.metaTasksDia, '#FFD500', '📋 Tasks Totais')}
                     {renderProgressBar(dashboard.ofertasTotal, dashboard.metaOfertasDia, '#17a2b8', '🏷️ Ofertas')}
                     {renderProgressBar(dashboard.missoesTotal, dashboard.metaMissoesDia, '#FF4500', '🎯 Missões')}
@@ -385,11 +382,11 @@ const HomeScreen = () => {
                     <hr style={{ borderColor: 'rgba(255,255,255,0.1)', margin: '15px 0' }}/>
                     <h3 style={{color: '#FFF', fontSize: '14px', marginBottom: '12px'}}>Subdivisão das Tasks</h3>
                     
-                    {/* 🔥 BARRAS DE SUBDIVISÃO DINÂMICAS */}
-                    {renderProgressBar(dashboard.tasksCompraTotal, dashboard.metaCompraDia, '#FFD500', '🛒 Compras')}
-                    {renderProgressBar(dashboard.tasksCervejaTotal, dashboard.metaCervejaDia, '#FFD500', '🍺 Cerveja')}
-                    {renderProgressBar(dashboard.tasksNabTotal, dashboard.metaNabDia, '#FFD500', '🥤 NAB')}
-                    {renderProgressBar(dashboard.tasksMktTotal, dashboard.metaMktDia, '#FFD500', '📺 MKT')}
+                    {/* 🔥 AS VARIÁVEIS CORRETAS ESTÃO AQUI. ADEUS BUG DO "1" NO SETOR 101 */}
+                    {renderProgressBar(dashboard.tasksCompraTotal, dashboard.metaTasksCompraDia, '#FFD500', '🛒 Compras')}
+                    {renderProgressBar(dashboard.tasksCervejaTotal, dashboard.metaTasksCervejaDia, '#FFD500', '🍺 Cerveja')}
+                    {renderProgressBar(dashboard.tasksNabTotal, dashboard.metaTasksNabDia, '#FFD500', '🥤 NAB')}
+                    {renderProgressBar(dashboard.tasksMktTotal, dashboard.metaTasksMktDia, '#FFD500', '📺 MKT')}
                     
                     {renderProgressBar(dashboard.compradoresTotal || 0, dashboard.metaCompradorDia, '#28a745', '🛍️ Comprador')}
 
@@ -406,9 +403,8 @@ const HomeScreen = () => {
         </div>
       </div>
 
-      {!jornadaAtiva ? (
-        <div className="inactiveContainer"><span className="inactiveEmoji">😴</span><h2 className="inactiveTitle">Rota em Repouso</h2><p className="inactiveDesc">Inicie a sua jornada no topo do ecrã.</p></div>
-      ) : (
+      {/* 🔥 A MÁGICA ACONTECE AQUI: A lista branca SÓ aparece se houver PDVs importados! */}
+      {jornadaAtiva && pdvs.length > 0 && (
         <div className="mainContent">
           <div className="searchBarContainer">
             <button className="fakeSearchBar" onClick={() => setModalFiltroVisible(true)}>
