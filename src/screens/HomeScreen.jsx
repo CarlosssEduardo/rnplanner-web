@@ -33,7 +33,7 @@ const HomeScreen = () => {
     tasksNabTotal: 0, 
     tasksMktTotal: 0,
     compradoresTotal: 0,
-    positivacaoTotal: 0, // 🚀 NOVA GAVETA ZERO
+    positivacaoTotal: 0, 
     metaTasksDia: 37,
     metaMissoesDia: 10,
     metaOfertasDia: 10,
@@ -42,7 +42,7 @@ const HomeScreen = () => {
     metaTasksCervejaDia: 9,
     metaTasksNabDia: 9,
     metaTasksMktDia: 9,
-    metaPositivacaoDia: 9 // 🚀 META POSITIVAÇÃO
+    metaPositivacaoDia: 9 
   });
   const [pendenciasGlobais, setPendenciasGlobais] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -142,18 +142,21 @@ const HomeScreen = () => {
     }
   };
 
+  // 🔥 SOLUÇÃO: Passar o idUnico para o backend encontrar a chave primária
   const handlePressPdv = (pdv) => {
-    const isConcluido = (dashboard.pdvsVisitadosIds || []).map(String).includes(String(pdv.id)); 
+    const isConcluido = (dashboard.pdvsVisitadosIds || []).map(String).includes(String(pdv.idUnico)) || 
+                        (dashboard.pdvsVisitadosIds || []).map(String).includes(String(pdv.id)); 
     if (isConcluido) {
       setModalReabrir({ visible: true, pdv: pdv });
     } else {
-      navigate('/visita', { state: { pdvId: pdv.id, pdvNome: pdv.nome } });
+      navigate('/visita', { state: { pdvId: pdv.idUnico || pdv.id, pdvNome: pdv.nome } });
     }
   };
 
+  // 🔥 SOLUÇÃO: Passar o idUnico aqui também
   const confirmarReabertura = () => {
     if (modalReabrir.pdv) {
-        navigate('/visita', { state: { pdvId: modalReabrir.pdv.id, pdvNome: modalReabrir.pdv.nome } });
+        navigate('/visita', { state: { pdvId: modalReabrir.pdv.idUnico || modalReabrir.pdv.id, pdvNome: modalReabrir.pdv.nome } });
         setModalReabrir({ visible: false, pdv: null });
     }
   };
@@ -261,11 +264,12 @@ const HomeScreen = () => {
     return matchStatus && (nomeSeguro.includes(buscaSegura) || textoSeguro.includes(buscaSegura));
   });
 
+  // 🔥 SOLUÇÃO: Verificação ajustada do ID para os filtros e para pintar de verde
   const pdvsFiltrados = pdvs.filter(pdv => {
     const termo = buscaPesquisa.toLowerCase();
     const matchBusca = pdv.nome.toLowerCase().includes(termo) || String(pdv.id).includes(termo);
     const pdvsConcluidosIds = (dashboard.pdvsVisitadosIds || []).map(String);
-    const isConcluido = pdvsConcluidosIds.includes(String(pdv.id)); 
+    const isConcluido = pdvsConcluidosIds.includes(String(pdv.idUnico)) || pdvsConcluidosIds.includes(String(pdv.id)); 
     const matchConcluidas = filtroConcluidas === 'PENDENTES' ? !isConcluido : isConcluido;
     return matchBusca && matchConcluidas;
   });
@@ -349,7 +353,6 @@ const HomeScreen = () => {
                 {!isLoading && (
                   <div className="dashboard-card-glass">
                     
-                    {/* 🚀 O CÁLCULO GIGANTE DA PERFORMANCE AGORA INCLUI A POSITIVAÇÃO */}
                     {renderGlobalProgressBar(
                       (dashboard.tasksTotal + dashboard.ofertasTotal + dashboard.missoesTotal + (dashboard.compradoresTotal || 0) + (dashboard.positivacaoTotal || 0)), 
                       (dashboard.metaTasksDia + dashboard.metaMissoesDia + dashboard.metaOfertasDia + dashboard.metaCompradorDia + dashboard.metaPositivacaoDia)
@@ -361,7 +364,6 @@ const HomeScreen = () => {
                     {renderProgressBar(dashboard.ofertasTotal, dashboard.metaOfertasDia, '#17a2b8', '🏷️ Ofertas')}
                     {renderProgressBar(dashboard.missoesTotal, dashboard.metaMissoesDia, '#FF4500', '🎯 Missões')}
                     
-                    {/* 🚀 A SUA NOVA BARRA DE POSITIVAÇÃO AQUI */}
                     {renderProgressBar(dashboard.positivacaoTotal || 0, dashboard.metaPositivacaoDia, '#28a745', '✅ Meta Positivação')}
 
                     <hr style={{ borderColor: 'rgba(255,255,255,0.1)', margin: '15px 0' }}/>
@@ -403,7 +405,9 @@ const HomeScreen = () => {
 
           <div className="listContainer">
             {pdvsFiltrados.map(pdv => {
-                const isConcluido = (dashboard.pdvsVisitadosIds || []).map(String).includes(String(pdv.id)); 
+                // 🔥 SOLUÇÃO: Verificação ajustada na hora de pintar o botão
+                const isConcluido = (dashboard.pdvsVisitadosIds || []).map(String).includes(String(pdv.idUnico)) || 
+                                    (dashboard.pdvsVisitadosIds || []).map(String).includes(String(pdv.id)); 
                 return (
                     <div key={pdv.id} className={`cardPdv ${isConcluido ? 'cardPdvConcluido' : ''}`} style={pdv.rkg && pdv.rkg <= 5 ? { borderLeft: '6px solid #0d6efd' } : {}} onClick={() => handlePressPdv(pdv)}>
                         <div className="cardHeader"><span className="cardTitle">{pdv.nome}</span><span className="codigoText">#{pdv.id}</span></div>
