@@ -10,6 +10,11 @@ import {
   deletarPendenciaManual 
 } from '../services/visitaService';
 
+const getDiaAtual = () => {
+  const dias = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+  return dias[new Date().getDay()];
+};
+
 const HomeScreen = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -30,7 +35,7 @@ const HomeScreen = () => {
     tasksCervejaTotal: 0, 
     tasksNabTotal: 0, 
     tasksMktTotal: 0,
-    compradoresTotal: 0 // 🔥 Adicionado o estado do comprador
+    compradoresTotal: 0 
   });
   const [pendenciasGlobais, setPendenciasGlobais] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -55,11 +60,11 @@ const HomeScreen = () => {
   const [isLoadingRastreio, setIsLoadingRastreio] = useState(false);
   const [buscouRastreio, setBuscouRastreio] = useState(false);
 
-  // Estados Hub de Execução
+  // Estados Hub de Execução (Iniciados com 0 para os contadores)
   const [modalManualVisible, setModalManualVisible] = useState(false);
   const [formManual, setFormManual] = useState({ 
-    tasks: '', ofertas: '', missoes: '', pendencia: '',
-    compra: '', cerveja: '', nab: '', mkt: '', comprador: false 
+    ofertas: 0, missoes: 0, pendencia: '',
+    compra: 0, cerveja: 0, nab: 0, mkt: 0, comprador: false 
   });
   const [isSavingManual, setIsSavingManual] = useState(false);
   const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
@@ -83,6 +88,18 @@ const HomeScreen = () => {
       return texto;
     }
   };
+
+  // 🔥 COMPONENTE DE CONTADOR PARA O HUB (MESMO ESTILO DO VISITA SCREEN)
+  const renderContadorHub = (titulo, valor, campo, cor) => (
+    <div className="inputGroupAvulso" style={{ borderLeft: `5px solid ${cor}`, paddingLeft: '10px', marginBottom: '15px' }}>
+      <label style={{ fontSize: '13px', fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>{titulo}</label>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <button className="btnControl" style={{ width: '40px', height: '40px' }} onClick={() => setFormManual({...formManual, [campo]: Math.max(0, Number(valor) - 1)})}>-</button>
+        <input type="number" className="contadorInput" style={{ width: '60px', textAlign: 'center' }} value={valor} readOnly />
+        <button className="btnControl" style={{ width: '40px', height: '40px', backgroundColor: cor, color: '#FFF' }} onClick={() => setFormManual({...formManual, [campo]: Number(valor) + 1})}>+</button>
+      </div>
+    </div>
+  );
 
   // ==========================================
   // EFEITOS
@@ -188,7 +205,6 @@ const HomeScreen = () => {
         comprador: formManual.comprador
       };
 
-      // Soma todas as tasks para o back-end (embora o back-end também some)
       payload.tasks = payload.tasksCompra + payload.tasksCerveja + payload.tasksNab + payload.tasksMkt;
 
       if (payload.tasks > 0 || payload.ofertas > 0 || payload.missoes > 0 || payload.comprador) {
@@ -207,7 +223,7 @@ const HomeScreen = () => {
         });
       }
 
-      setFormManual({ tasks: '', ofertas: '', missoes: '', pendencia: '', compra: '', cerveja: '', nab: '', mkt: '', comprador: false });
+      setFormManual({ compra: 0, cerveja: 0, nab: 0, mkt: 0, ofertas: 0, missoes: 0, pendencia: '', comprador: false });
       setModalManualVisible(false);
       carregarDados(); 
       showToast("Hub de Execução atualizado com sucesso! 🚀", "success");
@@ -265,6 +281,7 @@ const HomeScreen = () => {
   // ==========================================
   // RENDERIZAÇÃO DE BARRAS
   // ==========================================
+
   const renderGlobalProgressBar = (atual, meta) => {
     const metaReal = meta > 0 ? meta : 1;
     const progressoPercent = Math.round((atual / metaReal) * 100);
@@ -331,11 +348,9 @@ const HomeScreen = () => {
             ) : (
               <div className="activeHeaderContainer">
                 
-                {/* 🔥 NOVO: CABEÇALHO COM A ETIQUETA PEQUENA DE VISITAS */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                   <h2 className="headerSubtitle" style={{ marginBottom: 0 }}>Resumo do Dia</h2>
                   
-                  {/* Etiqueta discreta de visitas */}
                   {(dashboard.pdvsVisitadosIds || []).length > 0 && (
                     <span style={{ backgroundColor: '#28a745', color: '#FFF', padding: '4px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: 'bold' }}>
                       ✅ {(dashboard.pdvsVisitadosIds || []).length} Visita(s)
@@ -345,8 +360,13 @@ const HomeScreen = () => {
 
                 {!isLoading && (
                   <div className="dashboard-card-glass">
-                    {renderGlobalProgressBar((dashboard.tasksTotal + dashboard.ofertasTotal + dashboard.missoesTotal), 57)}
                     
+                    {/* 🔥 CÁLCULO PERFORMANCE (META 58): 37+11+9+1 */}
+                    {renderGlobalProgressBar(
+                      (dashboard.tasksTotal + dashboard.ofertasTotal + dashboard.missoesTotal + (dashboard.compradoresTotal || 0)), 
+                      58
+                    )}
+
                     <hr style={{ borderColor: 'rgba(255,255,255,0.1)', margin: '15px 0' }}/>
                     
                     {renderProgressBar(dashboard.tasksTotal, 37, '#FFD500', '📋 Tasks Totais')}
@@ -360,7 +380,6 @@ const HomeScreen = () => {
                     {renderProgressBar(dashboard.tasksNabTotal, 7, '#FFD500', '🥤 NAB')}
                     {renderProgressBar(dashboard.tasksMktTotal, 5, '#FFD500', '📺 MKT')}
                     
-                    {/* 🔥 NOVO: A BARRA DO COMPRADOR COM META 1 */}
                     {renderProgressBar(dashboard.compradoresTotal || 0, 1, '#28a745', '🛍️ Comprador')}
 
                   </div>
@@ -420,7 +439,7 @@ const HomeScreen = () => {
       )}
 
       {/* ========================================== */}
-      {/* MODAIS (AGORA COMPLETOS!)                  */}
+      {/* MODAIS                                     */}
       {/* ========================================== */}
 
       {modalFiltroVisible && (
@@ -437,7 +456,6 @@ const HomeScreen = () => {
           </div>
       )}
 
-      {/* 🔥 MODAL ENTREGAS COMPLETO */}
       {modalEntregasVisible && (
         <div className="modalOverlayPro">
           <div className="modalFiltroContent">
@@ -466,7 +484,6 @@ const HomeScreen = () => {
         </div>
       )}
 
-      {/* 🔥 MODAL PENDÊNCIAS COMPLETO */}
       {modalPendenciasVisible && (
           <div className="modalOverlayPro">
               <div className="modalFiltroContent modalPendenciasContent">
@@ -518,7 +535,7 @@ const HomeScreen = () => {
           </div>
       )}
 
-      {/* 🔥 MODAL HUB DE EXECUÇÃO COMPLETO COM NOVOS CAMPOS */}
+      {/* 🔥 MODAL HUB DE EXECUÇÃO COM DESIGN PRO (CONTADORES) */}
       {modalManualVisible && (
           <div className="modalOverlayPro">
               <div className="modalFiltroContent" style={{ paddingBottom: '30px' }}>
@@ -530,44 +547,23 @@ const HomeScreen = () => {
                     Adicione manualmente Subdivisões, Ofertas, Missões e Pendências. Tudo será somado à sua barra de Performance!
                   </p>
                   
-                  {/* NOVOS CAMPOS DO HUB */}
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
-                    <div className="inputGroupAvulso">
-                      <label style={{ fontSize: '12px' }}>🛒 Compras:</label>
-                      <input type="number" placeholder="0" value={formManual.compra} onChange={(e) => setFormManual({...formManual, compra: e.target.value})} />
-                    </div>
-                    <div className="inputGroupAvulso">
-                      <label style={{ fontSize: '12px' }}>🍺 Cerveja:</label>
-                      <input type="number" placeholder="0" value={formManual.cerveja} onChange={(e) => setFormManual({...formManual, cerveja: e.target.value})} />
-                    </div>
-                    <div className="inputGroupAvulso">
-                      <label style={{ fontSize: '12px' }}>🥤 NAB:</label>
-                      <input type="number" placeholder="0" value={formManual.nab} onChange={(e) => setFormManual({...formManual, nab: e.target.value})} />
-                    </div>
-                    <div className="inputGroupAvulso">
-                      <label style={{ fontSize: '12px' }}>📺 MKT:</label>
-                      <input type="number" placeholder="0" value={formManual.mkt} onChange={(e) => setFormManual({...formManual, mkt: e.target.value})} />
-                    </div>
+                    {renderContadorHub("🛒 Compra", formManual.compra, "compra", "#000")}
+                    {renderContadorHub("🍺 Cerveja", formManual.cerveja, "cerveja", "#000")}
+                    {renderContadorHub("🥤 NAB", formManual.nab, "nab", "#000")}
+                    {renderContadorHub("📺 MKT", formManual.mkt, "mkt", "#000")}
                   </div>
 
-                  <div className="inputGroupAvulso">
-                    <label>🏷️ Ofertas de Pontos:</label>
-                    <input type="number" placeholder="0" value={formManual.ofertas} onChange={(e) => setFormManual({...formManual, ofertas: e.target.value})} />
-                  </div>
+                  {renderContadorHub("🏷️ Ofertas de Pontos", formManual.ofertas, "ofertas", "#17a2b8")}
+                  {renderContadorHub("🎯 Missões", formManual.missoes, "missoes", "#FF4500")}
 
-                  <div className="inputGroupAvulso">
-                    <label>🎯 Missões:</label>
-                    <input type="number" placeholder="0" value={formManual.missoes} onChange={(e) => setFormManual({...formManual, missoes: e.target.value})} />
-                  </div>
-
-                  {/* NOVO CHECKBOX COMPRADOR */}
                   <div style={{ marginTop: '15px', padding: '10px', backgroundColor: '#f4f5f7', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <span style={{ fontWeight: 'bold', fontSize: '14px', color: '#333' }}>🛒 Adicionar 1 Comprador?</span>
                     <input 
                       type="checkbox" 
                       checked={formManual.comprador} 
                       onChange={(e) => setFormManual({...formManual, comprador: e.target.checked})} 
-                      style={{ width: '20px', height: '20px', accentColor: '#28a745' }}
+                      style={{ width: '24px', height: '24px', accentColor: '#28a745' }}
                     />
                   </div>
 
@@ -589,7 +585,6 @@ const HomeScreen = () => {
           </div>
       )}
 
-      {/* AVISOS */}
       {modalReabrir.visible && (
         <div className="modalOverlayPro"><div className="modalBoxPro"><div className="modalHeaderPro"><h3>Visita Finalizada ✅</h3></div><div className="modalBodyPro"><p>Deseja reabrir a visita?</p></div><div className="modalFooterPro"><button className="btnModalCancel" onClick={() => setModalReabrir({ visible: false, pdv: null })}>CANCELAR</button><button className="btnModalConfirm" onClick={confirmarReabertura}>SIM</button></div></div></div>
       )}
