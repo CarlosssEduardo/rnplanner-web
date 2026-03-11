@@ -64,7 +64,7 @@ const HomeScreen = () => {
   const [modalManualVisible, setModalManualVisible] = useState(false);
   const [formManual, setFormManual] = useState({ 
     ofertas: 0, missoes: 0, pendencia: '',
-    compra: 0, cerveja: 0, nab: 0, mkt: 0, comprador: false 
+    compra: 0, cerveja: 0, nab: 0, mkt: 0, comprador: 0 
   });
   const [isSavingManual, setIsSavingManual] = useState(false);
   const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
@@ -202,7 +202,7 @@ const HomeScreen = () => {
         tasksCerveja: Number(formManual.cerveja) || 0,
         tasksNab: Number(formManual.nab) || 0,
         tasksMkt: Number(formManual.mkt) || 0,
-        comprador: formManual.comprador
+        comprador: formManual.comprador > 0
       };
 
       payload.tasks = payload.tasksCompra + payload.tasksCerveja + payload.tasksNab + payload.tasksMkt;
@@ -560,10 +560,8 @@ const HomeScreen = () => {
                     {renderContadorHub("🏷️ Ofertas de Pontos", formManual.ofertas, "ofertas", "#17a2b8")}
                     {renderContadorHub("🎯 Missões", formManual.missoes, "missoes", "#FF4500")}
 
-                    <div style={{ marginTop: '15px', padding: '15px', backgroundColor: '#f4f5f7', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: '1px solid #ddd' }}>
-                      <span style={{ fontWeight: 'bold', fontSize: '14px', color: '#333' }}>🛒 Adicionar 1 Comprador?</span>
-                      <input type="checkbox" checked={formManual.comprador} onChange={(e) => setFormManual({...formManual, comprador: e.target.checked})} style={{ width: '24px', height: '24px', accentColor: '#28a745' }} />
-                    </div>
+                    <h4 style={{ fontSize: '14px', margin: '20px 0 15px', color: '#000', borderBottom: '1px solid #eee', paddingBottom: '5px' }}>🛒 Conversão</h4>
+                    {renderContadorHub("🛒 Comprador", formManual.comprador, "comprador", "#28a745")}     
 
                     <div style={{ marginTop: '20px' }}>
                       <label className="labelFiltro" style={{ color: '#000', fontWeight: 'bold' }}>⚠️ Novo Registro de Pendência:</label>
