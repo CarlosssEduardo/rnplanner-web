@@ -26,7 +26,15 @@ const HomeScreen = () => {
   // ==========================================
   const [pdvs, setPdvs] = useState([]);
   const [dashboard, setDashboard] = useState({ 
-    pdvsVisitados: 0, tasksTotal: 0, ofertasTotal: 0, missoesTotal: 0, pdvsVisitadosIds: [] 
+    pdvsVisitados: 0, 
+    tasksTotal: 0, 
+    ofertasTotal: 0, 
+    missoesTotal: 0, 
+    tasksCompraTotal: 0, 
+    tasksCervejaTotal: 0, 
+    tasksNabTotal: 0, 
+    tasksMktTotal: 0, 
+    pdvsVisitadosIds: [] 
   });
   const [pendenciasGlobais, setPendenciasGlobais] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -52,7 +60,7 @@ const HomeScreen = () => {
   const [isLoadingRastreio, setIsLoadingRastreio] = useState(false);
   const [buscouRastreio, setBuscouRastreio] = useState(false);
 
-  // 🔥 ESTADOS: LANÇAMENTO MANUAL E ALERTA PREMIUM (TOAST)
+  // ESTADOS: LANÇAMENTO MANUAL E ALERTA PREMIUM (TOAST)
   const [modalManualVisible, setModalManualVisible] = useState(false);
   const [formManual, setFormManual] = useState({ tasks: '', ofertas: '', missoes: '', pendencia: '' });
   const [isSavingManual, setIsSavingManual] = useState(false);
@@ -61,29 +69,25 @@ const HomeScreen = () => {
   const DIAS_SEMANA = ['Todos', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 
   // ==========================================
-  // 🔥 UTILITÁRIO: LIMPAR TEXTO JSON (A MÁGICA ADICIONADA AQUI)
+  // UTILITÁRIO: LIMPAR TEXTO JSON
   // ==========================================
   const formatarTextoPendencia = (texto) => {
     try {
       const parsed = JSON.parse(texto);
       if (Array.isArray(parsed)) {
-        
-        // 🔥 A MÁGICA: Corta fora da lista tudo o que já tem o status 'RESOLVIDO'
         const itensPendentes = parsed.filter(p => p.status !== 'RESOLVIDO');
-        
-        // Se ainda sobrou algo para resolver, ele mostra. Se não, mostra o check verde!
         if (itensPendentes.length > 0) {
           return itensPendentes.map(p => `• ${p.texto}`).join("  |  ");
         } else {
           return "✅ Todos os itens resolvidos!";
         }
-        
       }
       return parsed.texto || texto;
     } catch (e) {
       return texto;
     }
   };
+
   // ==========================================
   // EFEITOS DE CICLO DE VIDA E UTILIDADES
   // ==========================================
@@ -109,7 +113,6 @@ const HomeScreen = () => {
     }
   }, [location, navigate]);
 
-  // Função para chamar o Alerta Bonitão
   const showToast = (message, type = 'success') => {
     setToast({ visible: true, message, type });
     setTimeout(() => setToast({ visible: false, message: '', type: 'success' }), 4000);
@@ -158,7 +161,6 @@ const HomeScreen = () => {
     navigate('/resumo');
   };
 
-  // 🔥 NOVA FUNÇÃO: RESOLVER OU APAGAR REGISTROS DO HUB (SEM TELA BRANCA)
   const handleAcaoManual = async (idCompleto, acao) => {
     const idNumeric = typeof idCompleto === 'string' ? idCompleto.replace('MANUAL-', '') : idCompleto;
     try {
@@ -169,7 +171,6 @@ const HomeScreen = () => {
         await deletarPendenciaManual(idNumeric);
         showToast("Registro removido com sucesso! 🗑️", "success");
       }
-      // Atualiza a lista após a ação para refletir a mudança no modal
       const dadosPend = await obterPendenciasGlobais();
       setPendenciasGlobais(dadosPend || []);
     } catch (error) {
@@ -178,11 +179,9 @@ const HomeScreen = () => {
     }
   };
 
-  // 🔥 SALVAR LANÇAMENTO MANUAL (AVULSO)
   const handleSalvarManual = async () => {
     setIsSavingManual(true);
     try {
-
       const BASE_URL = 'https://rnplanner-api-ekc2hratcvgqhgc5.brazilsouth-01.azurewebsites.net'; 
 
       if (formManual.tasks || formManual.ofertas || formManual.missoes) {
@@ -222,7 +221,7 @@ const HomeScreen = () => {
   };
 
   // ==========================================
-  // LÓGICA DE RASTREIO
+  // LÓGICA DE RASTREIO E PENDÊNCIAS
   // ==========================================
   const abrirModalEntregas = () => {
     setPesquisaRastreio('');
@@ -239,7 +238,6 @@ const HomeScreen = () => {
 
   const handleBuscarEntrega = async () => {
     if (!pesquisaRastreio.trim()) return;
-    
     setIsLoadingRastreio(true);
     setBuscouRastreio(true);
     setDadosRastreio(null);
@@ -254,8 +252,6 @@ const HomeScreen = () => {
           status: resultado.status,
           horario: resultado.horario || "Indisponível" 
         });
-      } else {
-        setDadosRastreio(null);
       }
     } catch (error) {
       console.error("Erro ao buscar carga:", error);
@@ -264,9 +260,6 @@ const HomeScreen = () => {
     }
   };
 
-  // ==========================================
-  // FUNÇÕES DO PAINEL DE PENDÊNCIAS
-  // ==========================================
   const abrirPainelPendencias = async () => {
     setModalPendenciasVisible(true);
     try {
@@ -299,21 +292,14 @@ const HomeScreen = () => {
     return matchDia && matchBusca && matchConcluidas;
   });
 
-  const totalVisitasRota = pdvs.filter(pdv => {
-    const diaDoPdv = pdv.diaSemana || pdv.rota || '';
-    return diaSelecionado === 'Todos' || diaDoPdv.toLowerCase().includes(diaSelecionado.toLowerCase());
-  }).length;
-
   // ==========================================
   // RENDERIZAÇÃO DE COMPONENTES VISUAIS
   // ==========================================
 
-  // 🔥 A NOVA BARRA GLOBAL (PORCENTAGEM E EXPLOSÃO)
   const renderGlobalProgressBar = (atual, meta) => {
     const metaReal = meta > 0 ? meta : 1;
     const progressoPercent = Math.round((atual / metaReal) * 100);
     const bateuMeta = progressoPercent >= 100;
-    // Trava a largura do preenchimento em 100% pra não vazar a tela
     const widthVisual = Math.min(progressoPercent, 100);
 
     return (
@@ -346,8 +332,8 @@ const HomeScreen = () => {
     return (
       <div className="metaContainer">
         <div className="metaHeader">
-          <span className="metaLabel">{label}</span>
-          <span className={`metaText ${bateuMeta ? 'successText' : ''}`}>
+          <span className="metaLabel" style={{ color: '#FFF' }}>{label}</span>
+          <span className={`metaText ${bateuMeta ? 'successText' : ''}`} style={{ color: '#FFF' }}>
             {atual} / {metaReal} {bateuMeta && '🏆'}
           </span>
         </div>
@@ -397,7 +383,6 @@ const HomeScreen = () => {
                 <span className="rastreioPdvNomeClean">{dadosRastreio.nomePdv}</span>
                 <span className="rastreioPdvIdClean">#{dadosRastreio.pdvId}</span>
               </div>
-
               <div className="rastreioStatusBox">
                 {dadosRastreio.status === 'CONCLUDED' ? (
                   <><span className="rastreioStatusText statusGreen">✅ ENTREGUE</span>
@@ -413,12 +398,10 @@ const HomeScreen = () => {
                   <span className="rastreioSubStatus">Caminhão a caminho. Aguarde no local.</span></>
                 )}
               </div>
-
               <div className="rastreioInfoRowMotorista">
                 <span className="rastreioLabelClean">Motorista Responsável</span>
                 <span className="rastreioDriverClean">{dadosRastreio.motorista}</span>
               </div>
-
               <div className="rastreioInfoRowMotorista" style={{marginTop: '10px'}}>
                 <span className="rastreioLabelClean">⏰ Status do Horário / Fila</span>
                 <span className="rastreioDriverClean">{dadosRastreio.horario}</span>
@@ -467,18 +450,32 @@ const HomeScreen = () => {
                 {!isLoading && (
                   <div className="dashboard-card-glass">
                     
-                    {/* 🔥 BARRA GLOBAL (PORCENTAGEM) INJETADA AQUI */}
+                    {/* 🔥 BARRA GLOBAL (SOMA DAS METAS: 37+11+9 = 57) */}
                     {renderGlobalProgressBar(
                       (dashboard.tasksTotal + dashboard.ofertasTotal + dashboard.missoesTotal), 
-                      55
+                      57
                     )}
 
                     <hr style={{ borderColor: 'rgba(255,255,255,0.1)', margin: '15px 0' }}/>
 
-                    {renderProgressBar((dashboard.pdvsVisitadosIds || []).length, totalVisitasRota, '#28a745', '📍 Visitas do Dia')}
-                    {renderProgressBar(dashboard.tasksTotal, 35, '#FFD500', '📋 Tasks')}
-                    {renderProgressBar(dashboard.ofertasTotal, 10, '#17a2b8', '🏷️ Ofertas')}
-                    {renderProgressBar(dashboard.missoesTotal, 10, '#FF4500', '🎯 Missões')}
+                    {/* 🔥 SUBSTITUIÇÃO DA BARRA DE VISITAS POR UM CONTADOR VISUAL */}
+                    <div style={{ backgroundColor: '#28a745', color: '#FFF', padding: '12px', borderRadius: '10px', textAlign: 'center', fontWeight: 'bold', fontSize: '15px', marginBottom: '15px', boxShadow: '0 4px 10px rgba(40, 167, 69, 0.3)' }}>
+                      ✅ {(dashboard.pdvsVisitadosIds || []).length} Visita(s) Finalizada(s)
+                    </div>
+
+                    {renderProgressBar(dashboard.tasksTotal, 37, '#FFD500', '📋 Tasks Totais')}
+                    {renderProgressBar(dashboard.ofertasTotal, 9, '#17a2b8', '🏷️ Ofertas')}
+                    {renderProgressBar(dashboard.missoesTotal, 11, '#FF4500', '🎯 Missões')}
+
+                    <hr style={{ borderColor: 'rgba(255,255,255,0.1)', margin: '15px 0' }}/>
+                    
+                    {/* 🔥 AS NOVAS SUBDIVISÕES DO PDF */}
+                    <h3 style={{color: '#FFF', fontSize: '14px', marginBottom: '12px'}}>Subdivisão das Tasks</h3>
+                    {renderProgressBar(dashboard.tasksCompraTotal, 14, '#FFD500', '🛒 Compras')}
+                    {renderProgressBar(dashboard.tasksCervejaTotal, 11, '#FFD500', '🍺 Cerveja')}
+                    {renderProgressBar(dashboard.tasksNabTotal, 7, '#FFD500', '🥤 NAB')}
+                    {renderProgressBar(dashboard.tasksMktTotal, 5, '#FFD500', '📺 MKT')}
+
                   </div>
                 )}
 
@@ -532,13 +529,32 @@ const HomeScreen = () => {
             {pdvsFiltrados.map(pdv => {
                 const isConcluido = (dashboard.pdvsVisitadosIds || []).map(String).includes(String(pdv.id)); 
                 return (
-                    <div key={pdv.id} className={`cardPdv ${isConcluido ? 'cardPdvConcluido' : ''}`} onClick={() => handlePressPdv(pdv)}>
+                    <div 
+                        key={pdv.id} 
+                        className={`cardPdv ${isConcluido ? 'cardPdvConcluido' : ''}`} 
+                        // 🔥 BORDA AZUL SE O RKG FOR DE ALTA PRIORIDADE (1 A 5)
+                        style={pdv.rkg && pdv.rkg <= 5 ? { borderLeft: '6px solid #0d6efd' } : {}}
+                        onClick={() => handlePressPdv(pdv)}
+                    >
                         <div className="cardHeader">
                             <span className="cardTitle">{pdv.nome}</span>
                             <span className="codigoText">#{pdv.id}</span>
                         </div>
                         <div className="cardBody">
                             <span className="addressText">📅 Rota: {pdv.diaSemana || pdv.rota}</span>
+                            
+                            {/* 🔥 AQUI ENTRAM OS NOVOS DADOS DO PDF DENTRO DO CARD */}
+                            {(pdv.metaTasks !== undefined && pdv.metaTasks !== null) && (
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '10px' }}>
+                                    <span style={{ fontSize: '11px', background: '#F4F5F7', padding: '4px 6px', borderRadius: '4px', fontWeight: 'bold', color: '#333' }}>📋 {pdv.metaTasks} Tasks</span>
+                                    <span style={{ fontSize: '11px', background: '#F4F5F7', padding: '4px 6px', borderRadius: '4px', fontWeight: 'bold', color: '#333' }}>🎯 {pdv.metaMissoes} Miss</span>
+                                    <span style={{ fontSize: '11px', background: '#F4F5F7', padding: '4px 6px', borderRadius: '4px', fontWeight: 'bold', color: '#333' }}>🏷️ {pdv.metaOfertas} Ofer</span>
+                                    
+                                    <span style={{ fontSize: '11px', background: pdv.score5?.toUpperCase() === 'SIM' ? '#d4edda' : '#f8d7da', color: pdv.score5?.toUpperCase() === 'SIM' ? '#155724' : '#721c24', padding: '4px 6px', borderRadius: '4px', fontWeight: 'bold' }}>⭐ SC5: {pdv.score5?.toUpperCase()}</span>
+                                    <span style={{ fontSize: '11px', background: pdv.comprador?.toUpperCase() === 'SIM' ? '#d4edda' : '#f8d7da', color: pdv.comprador?.toUpperCase() === 'SIM' ? '#155724' : '#721c24', padding: '4px 6px', borderRadius: '4px', fontWeight: 'bold' }}>🛒 Comp: {pdv.comprador?.toUpperCase()}</span>
+                                </div>
+                            )}
+
                         </div>
                         <div className="cardFooter">
                             {isConcluido ? (
@@ -608,13 +624,11 @@ const HomeScreen = () => {
                                   </div>
                                   <div className="pendenciaTextoBox">
                                       <div className={`statusIndicatorGlobal ${pendencia.status === 'RESOLVIDO' ? 'statusResolvido' : 'statusPendente'}`}></div>
-                                      {/* 🔥 FUNÇÃO APLICADA AQUI EMBAIXO: */}
                                       <span className={`pendenciaTexto ${pendencia.status === 'RESOLVIDO' ? 'pendenciaTextoRiscado' : ''}`}>
                                         {formatarTextoPendencia(pendencia.texto, pendencia.status)}
                                       </span>
                                   </div>
                                   
-                                  {/* 🔥 BOTÕES INTELIGENTES: Resolver/Apagar para Hub, Abrir Visita para PDVs */}
                                   <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '10px' }}>
                                     {pendencia.pdvId === 0 ? (
                                         <>
