@@ -35,7 +35,16 @@ const HomeScreen = () => {
     tasksCervejaTotal: 0, 
     tasksNabTotal: 0, 
     tasksMktTotal: 0,
-    compradoresTotal: 0 
+    compradoresTotal: 0,
+    // 🔥 NOVAS GAVETAS DE METAS DINÂMICAS (Com valores padrão iniciais)
+    metaTasksDia: 37,
+    metaMissoesDia: 10,
+    metaOfertasDia: 10,
+    metaCompradorDia: 1,
+    metaCompraDia: 10,
+    metaCervejaDia: 9,
+    metaNabDia: 9,
+    metaMktDia: 9
   });
   const [pendenciasGlobais, setPendenciasGlobais] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -89,7 +98,6 @@ const HomeScreen = () => {
     }
   };
 
-  // 🔥 ESSA FUNÇÃO DEVE FICAR DENTRO DO HOMESCREEN, ANTES DO RETURN
   const renderContadorHub = (titulo, valor, campo, cor) => (
     <div className="contadorCard" style={{ borderLeft: `6px solid ${cor}`, marginBottom: '12px', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <span className="contadorTitle">{titulo}</span>
@@ -223,7 +231,7 @@ const HomeScreen = () => {
         });
       }
 
-      setFormManual({ compra: 0, cerveja: 0, nab: 0, mkt: 0, ofertas: 0, missoes: 0, pendencia: '', comprador: false });
+      setFormManual({ compra: 0, cerveja: 0, nab: 0, mkt: 0, ofertas: 0, missoes: 0, pendencia: '', comprador: 0 });
       setModalManualVisible(false);
       carregarDados(); 
       showToast("Hub de Execução atualizado com sucesso! 🚀", "success");
@@ -361,26 +369,29 @@ const HomeScreen = () => {
                 {!isLoading && (
                   <div className="dashboard-card-glass">
                     
-                    {/* 🔥 CÁLCULO PERFORMANCE (META 58): 37+11+9+1 */}
+                    {/* 🔥 CÁLCULO PERFORMANCE 100% DINÂMICO (Soma as Metas Reais) */}
                     {renderGlobalProgressBar(
                       (dashboard.tasksTotal + dashboard.ofertasTotal + dashboard.missoesTotal + (dashboard.compradoresTotal || 0)), 
-                      58
+                      (dashboard.metaTasksDia + dashboard.metaMissoesDia + dashboard.metaOfertasDia + dashboard.metaCompradorDia)
                     )}
 
                     <hr style={{ borderColor: 'rgba(255,255,255,0.1)', margin: '15px 0' }}/>
                     
-                    {renderProgressBar(dashboard.tasksTotal, 37, '#FFD500', '📋 Tasks Totais')}
-                    {renderProgressBar(dashboard.ofertasTotal, 9, '#17a2b8', '🏷️ Ofertas')}
-                    {renderProgressBar(dashboard.missoesTotal, 11, '#FF4500', '🎯 Missões')}
+                    {/* 🔥 BARRAS TOTAIS DINÂMICAS */}
+                    {renderProgressBar(dashboard.tasksTotal, dashboard.metaTasksDia, '#FFD500', '📋 Tasks Totais')}
+                    {renderProgressBar(dashboard.ofertasTotal, dashboard.metaOfertasDia, '#17a2b8', '🏷️ Ofertas')}
+                    {renderProgressBar(dashboard.missoesTotal, dashboard.metaMissoesDia, '#FF4500', '🎯 Missões')}
 
                     <hr style={{ borderColor: 'rgba(255,255,255,0.1)', margin: '15px 0' }}/>
                     <h3 style={{color: '#FFF', fontSize: '14px', marginBottom: '12px'}}>Subdivisão das Tasks</h3>
-                    {renderProgressBar(dashboard.tasksCompraTotal, 14, '#FFD500', '🛒 Compras')}
-                    {renderProgressBar(dashboard.tasksCervejaTotal, 11, '#FFD500', '🍺 Cerveja')}
-                    {renderProgressBar(dashboard.tasksNabTotal, 7, '#FFD500', '🥤 NAB')}
-                    {renderProgressBar(dashboard.tasksMktTotal, 5, '#FFD500', '📺 MKT')}
                     
-                    {renderProgressBar(dashboard.compradoresTotal || 0, 1, '#28a745', '🛍️ Comprador')}
+                    {/* 🔥 BARRAS DE SUBDIVISÃO DINÂMICAS */}
+                    {renderProgressBar(dashboard.tasksCompraTotal, dashboard.metaCompraDia, '#FFD500', '🛒 Compras')}
+                    {renderProgressBar(dashboard.tasksCervejaTotal, dashboard.metaCervejaDia, '#FFD500', '🍺 Cerveja')}
+                    {renderProgressBar(dashboard.tasksNabTotal, dashboard.metaNabDia, '#FFD500', '🥤 NAB')}
+                    {renderProgressBar(dashboard.tasksMktTotal, dashboard.metaMktDia, '#FFD500', '📺 MKT')}
+                    
+                    {renderProgressBar(dashboard.compradoresTotal || 0, dashboard.metaCompradorDia, '#28a745', '🛍️ Comprador')}
 
                   </div>
                 )}
@@ -535,7 +546,6 @@ const HomeScreen = () => {
           </div>
       )}
 
-      {/* 🔥 SUBSTITUA TODO O SEU MODAL POR ESTE ABAIXO */}
       {modalManualVisible && (
           <div className="modalOverlayPro">
               <div className="modalFiltroContent" style={{ paddingBottom: '30px', maxWidth: '90%', width: '400px' }}>
@@ -550,7 +560,6 @@ const HomeScreen = () => {
                   <div style={{ maxHeight: '60vh', overflowY: 'auto', paddingRight: '5px', display: 'flex', flexDirection: 'column' }}>
                     <h4 style={{ fontSize: '14px', marginBottom: '15px', color: '#000', borderBottom: '1px solid #eee', paddingBottom: '5px' }}>📋 Tasks do Dia</h4>
                     
-                    {/* 🔥 AGORA UM EMBAIXO DO OUTRO */}
                     {renderContadorHub("🛒 Compra", formManual.compra, "compra", "#000")}
                     {renderContadorHub("🍺 Cerveja", formManual.cerveja, "cerveja", "#000")}
                     {renderContadorHub("🥤 NAB", formManual.nab, "nab", "#000")}
