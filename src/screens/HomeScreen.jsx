@@ -16,40 +16,57 @@ const HomeScreen = () => {
 
   const setorLogado = localStorage.getItem('setorAtivo') || '---';
   
+  // ==========================================
   // ESTADOS PRINCIPAIS
+  // ==========================================
   const [pdvs, setPdvs] = useState([]);
   const [dashboard, setDashboard] = useState({ 
-    pdvsVisitados: 0, tasksTotal: 0, ofertasTotal: 0, missoesTotal: 0, pdvsVisitadosIds: [],
-    tasksCompraTotal: 0, tasksCervejaTotal: 0, tasksNabTotal: 0, tasksMktTotal: 0
+    pdvsVisitados: 0, 
+    tasksTotal: 0, 
+    ofertasTotal: 0, 
+    missoesTotal: 0, 
+    pdvsVisitadosIds: [],
+    tasksCompraTotal: 0, 
+    tasksCervejaTotal: 0, 
+    tasksNabTotal: 0, 
+    tasksMktTotal: 0,
+    compradoresTotal: 0 // 🔥 Adicionado o estado do comprador
   });
   const [pendenciasGlobais, setPendenciasGlobais] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [jornadaAtiva, setJornadaAtiva] = useState(() => localStorage.getItem('jornadaAtiva') === 'true');
 
-  // Filtros Globais e Abas (Sem o filtro de dias!)
+  // Filtros Globais e Abas
   const [buscaPesquisa, setBuscaPesquisa] = useState('');
   const [buscaPendencia, setBuscaPendencia] = useState('');
   const [filtroConcluidas, setFiltroConcluidas] = useState('PENDENTES');
   const [filtroPendenciasGlobal, setFiltroPendenciasGlobal] = useState('PENDENTE');
 
-  // Controle de Modais Originais
+  // Controle de Modais 
   const [modalFiltroVisible, setModalFiltroVisible] = useState(false);
   const [modalEntregasVisible, setModalEntregasVisible] = useState(false);
   const [modalPendenciasVisible, setModalPendenciasVisible] = useState(false);
   const [modalReabrir, setModalReabrir] = useState({ visible: false, pdv: null });
   const [modalFinalizar, setModalFinalizar] = useState(false);
 
-  // Estados do Rastreio e Hub
+  // Estados do Rastreio
   const [pesquisaRastreio, setPesquisaRastreio] = useState('');
   const [dadosRastreio, setDadosRastreio] = useState(null);
   const [isLoadingRastreio, setIsLoadingRastreio] = useState(false);
   const [buscouRastreio, setBuscouRastreio] = useState(false);
 
+  // Estados Hub de Execução
   const [modalManualVisible, setModalManualVisible] = useState(false);
-  const [formManual, setFormManual] = useState({ tasks: '', ofertas: '', missoes: '', pendencia: '' });
+  const [formManual, setFormManual] = useState({ 
+    tasks: '', ofertas: '', missoes: '', pendencia: '',
+    compra: '', cerveja: '', nab: '', mkt: '', comprador: false 
+  });
   const [isSavingManual, setIsSavingManual] = useState(false);
   const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
 
+  // ==========================================
+  // UTILITÁRIO
+  // ==========================================
   const formatarTextoPendencia = (texto) => {
     try {
       const parsed = JSON.parse(texto);
@@ -67,6 +84,9 @@ const HomeScreen = () => {
     }
   };
 
+  // ==========================================
+  // EFEITOS
+  // ==========================================
   useEffect(() => {
     localStorage.setItem('jornadaAtiva', jornadaAtiva);
     if (jornadaAtiva) carregarDados();
@@ -91,6 +111,9 @@ const HomeScreen = () => {
     setTimeout(() => setToast({ visible: false, message: '', type: 'success' }), 4000);
   };
 
+  // ==========================================
+  // AÇÕES
+  // ==========================================
   const carregarDados = async () => {
     try {
       setIsLoading(true);
@@ -100,7 +123,7 @@ const HomeScreen = () => {
         obterPendenciasGlobais().catch(() => [])
       ]);
       setPdvs(dadosPdvs);
-      setDashboard(dadosDash);
+      if (dadosDash) setDashboard(dadosDash);
       setPendenciasGlobais(dadosPendencias || []);
     } catch (error) {
       console.error("Erro de sincronização:", error);
@@ -153,18 +176,29 @@ const HomeScreen = () => {
     setIsSavingManual(true);
     try {
       const BASE_URL = 'https://rnplanner-api-ekc2hratcvgqhgc5.brazilsouth-01.azurewebsites.net'; 
-      if (formManual.tasks || formManual.ofertas || formManual.missoes) {
+      
+      const payload = {
+        setor: setorLogado,
+        ofertas: Number(formManual.ofertas) || 0,
+        missoes: Number(formManual.missoes) || 0,
+        tasksCompra: Number(formManual.compra) || 0,
+        tasksCerveja: Number(formManual.cerveja) || 0,
+        tasksNab: Number(formManual.nab) || 0,
+        tasksMkt: Number(formManual.mkt) || 0,
+        comprador: formManual.comprador
+      };
+
+      // Soma todas as tasks para o back-end (embora o back-end também some)
+      payload.tasks = payload.tasksCompra + payload.tasksCerveja + payload.tasksNab + payload.tasksMkt;
+
+      if (payload.tasks > 0 || payload.ofertas > 0 || payload.missoes > 0 || payload.comprador) {
         await fetch(`${BASE_URL}/lancamento-manual/salvar`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            setor: setorLogado,
-            tasks: Number(formManual.tasks) || 0,
-            ofertas: Number(formManual.ofertas) || 0,
-            missoes: Number(formManual.missoes) || 0
-          })
+          body: JSON.stringify(payload)
         });
       }
+
       if (formManual.pendencia.trim() !== '') {
         await fetch(`${BASE_URL}/pendencias-manuais/salvar`, {
           method: 'POST',
@@ -172,7 +206,8 @@ const HomeScreen = () => {
           body: JSON.stringify({ setor: setorLogado, texto: formManual.pendencia })
         });
       }
-      setFormManual({ tasks: '', ofertas: '', missoes: '', pendencia: '' });
+
+      setFormManual({ tasks: '', ofertas: '', missoes: '', pendencia: '', compra: '', cerveja: '', nab: '', mkt: '', comprador: false });
       setModalManualVisible(false);
       carregarDados(); 
       showToast("Hub de Execução atualizado com sucesso! 🚀", "success");
@@ -218,7 +253,6 @@ const HomeScreen = () => {
     return matchStatus && (nomeSeguro.includes(buscaSegura) || textoSeguro.includes(buscaSegura));
   });
 
-  // 🔥 FILTRO LIMPO: Somente Busca de Texto e Status (Removeu o matchDia)
   const pdvsFiltrados = pdvs.filter(pdv => {
     const termo = buscaPesquisa.toLowerCase();
     const matchBusca = pdv.nome.toLowerCase().includes(termo) || String(pdv.id).includes(termo);
@@ -228,8 +262,9 @@ const HomeScreen = () => {
     return matchBusca && matchConcluidas;
   });
 
-  const totalVisitasRota = pdvs.length;
-
+  // ==========================================
+  // RENDERIZAÇÃO DE BARRAS
+  // ==========================================
   const renderGlobalProgressBar = (atual, meta) => {
     const metaReal = meta > 0 ? meta : 1;
     const progressoPercent = Math.round((atual / metaReal) * 100);
@@ -279,43 +314,14 @@ const HomeScreen = () => {
     </div>
   );
 
-  const renderModalRastreio = () => {
-    if (!modalEntregasVisible) return null;
-    return (
-      <div className="modalOverlayPro">
-        <div className="modalFiltroContent">
-          <div className="modalHeader">
-            <h3 className="modalTitle">Janela de Entrega 🚚</h3>
-            <button onClick={fecharModalEntregas} className="closeModalText">FECHAR ❌</button>
-          </div>
-          <div className="novaPendenciaRow">
-            <input type="number" className="novaPendenciaInput" placeholder="ID do PDV (ex: 55107)" value={pesquisaRastreio} onChange={(e) => setPesquisaRastreio(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleBuscarEntrega()} />
-            <button className="btnAddPendencia btnBuscaRastreio" onClick={handleBuscarEntrega} disabled={isLoadingRastreio}>{isLoadingRastreio ? '...' : 'BUSCAR'}</button>
-          </div>
-          {buscouRastreio && !isLoadingRastreio && dadosRastreio && (
-            <div className="rastreioCardClean">
-              <div className="rastreioPdvHeaderClean"><span className="rastreioPdvNomeClean">{dadosRastreio.nomePdv}</span><span className="rastreioPdvIdClean">#{dadosRastreio.pdvId}</span></div>
-              <div className="rastreioStatusBox">
-                {dadosRastreio.status === 'CONCLUDED' ? (<><span className="rastreioStatusText statusGreen">✅ ENTREGUE</span><span className="rastreioSubStatus">A mercadoria já foi entregue no local.</span></>) : dadosRastreio.status === 'IN_TREATMENT' ? (<><span className="rastreioStatusText statusTratamento">🛠️ EM TRATAMENTO</span><span className="rastreioSubStatus">Aguardando resolução pela central.</span></>) : dadosRastreio.status === 'RESCHEDULED' ? (<><span className="rastreioStatusText statusDanger">🔄 REPROGRAMADA</span><span className="rastreioSubStatus">A entrega foi adiada para outra data.</span></>) : (<><span className="rastreioStatusText statusOrange">⏳ JANELA PENDENTE</span><span className="rastreioSubStatus">Caminhão a caminho. Aguarde no local.</span></>)}
-              </div>
-              <div className="rastreioInfoRowMotorista"><span className="rastreioLabelClean">Motorista Responsável</span><span className="rastreioDriverClean">{dadosRastreio.motorista}</span></div>
-              <div className="rastreioInfoRowMotorista" style={{marginTop: '10px'}}><span className="rastreioLabelClean">⏰ Status do Horário / Fila</span><span className="rastreioDriverClean">{dadosRastreio.horario}</span></div>
-            </div>
-          )}
-          {buscouRastreio && !isLoadingRastreio && !dadosRastreio && (
-            <div className="rastreioCardClean rastreioErroCard"><span className="rastreioStatusText statusDanger" style={{textAlign: 'center', width: '100%'}}>Nenhuma carga encontrada!</span></div>
-          )}
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className="home-safe-area">
       <div className="headerArea">
         {renderColmeiaBackground()}
         <div className="headerContentWrapper">
+            
             <h1 className="headerTitle">Minha Rota - Setor {setorLogado}</h1>
+            
             {!jornadaAtiva ? (
               <div className="iniciarJornadaCard">
                 <span className="iniciarJornadaIcon">🌅</span>
@@ -324,16 +330,25 @@ const HomeScreen = () => {
               </div>
             ) : (
               <div className="activeHeaderContainer">
-                <h2 className="headerSubtitle">Resumo do Dia</h2>
+                
+                {/* 🔥 NOVO: CABEÇALHO COM A ETIQUETA PEQUENA DE VISITAS */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                  <h2 className="headerSubtitle" style={{ marginBottom: 0 }}>Resumo do Dia</h2>
+                  
+                  {/* Etiqueta discreta de visitas */}
+                  {(dashboard.pdvsVisitadosIds || []).length > 0 && (
+                    <span style={{ backgroundColor: '#28a745', color: '#FFF', padding: '4px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: 'bold' }}>
+                      ✅ {(dashboard.pdvsVisitadosIds || []).length} Visita(s)
+                    </span>
+                  )}
+                </div>
+
                 {!isLoading && (
                   <div className="dashboard-card-glass">
                     {renderGlobalProgressBar((dashboard.tasksTotal + dashboard.ofertasTotal + dashboard.missoesTotal), 57)}
+                    
                     <hr style={{ borderColor: 'rgba(255,255,255,0.1)', margin: '15px 0' }}/>
                     
-                    <div style={{ backgroundColor: '#28a745', color: '#FFF', padding: '12px', borderRadius: '10px', textAlign: 'center', fontWeight: 'bold', fontSize: '15px', marginBottom: '15px', boxShadow: '0 4px 10px rgba(40, 167, 69, 0.3)' }}>
-                      ✅ {(dashboard.pdvsVisitadosIds || []).length} Visita(s) Finalizada(s)
-                    </div>
-
                     {renderProgressBar(dashboard.tasksTotal, 37, '#FFD500', '📋 Tasks Totais')}
                     {renderProgressBar(dashboard.ofertasTotal, 9, '#17a2b8', '🏷️ Ofertas')}
                     {renderProgressBar(dashboard.missoesTotal, 11, '#FF4500', '🎯 Missões')}
@@ -344,6 +359,10 @@ const HomeScreen = () => {
                     {renderProgressBar(dashboard.tasksCervejaTotal, 11, '#FFD500', '🍺 Cerveja')}
                     {renderProgressBar(dashboard.tasksNabTotal, 7, '#FFD500', '🥤 NAB')}
                     {renderProgressBar(dashboard.tasksMktTotal, 5, '#FFD500', '📺 MKT')}
+                    
+                    {/* 🔥 NOVO: A BARRA DO COMPRADOR COM META 1 */}
+                    {renderProgressBar(dashboard.compradoresTotal || 0, 1, '#28a745', '🛍️ Comprador')}
+
                   </div>
                 )}
                 <button className="btnLancamentoManual" onClick={() => setModalManualVisible(true)}>➕ Hub de Execução</button>
@@ -364,7 +383,6 @@ const HomeScreen = () => {
           <div className="searchBarContainer">
             <button className="fakeSearchBar" onClick={() => setModalFiltroVisible(true)}>
               <span className="fakeSearchIcon">🔍</span>
-              {/* 🔥 REMOVIDO O DIA DA SEMANA DO PLACEHOLDER */}
               <span className="fakeSearchPlaceholder">Buscar PDV por Nome ou ID...</span>
             </button>
           </div>
@@ -401,7 +419,9 @@ const HomeScreen = () => {
         </div>
       )}
 
-      {renderModalRastreio()}
+      {/* ========================================== */}
+      {/* MODAIS (AGORA COMPLETOS!)                  */}
+      {/* ========================================== */}
 
       {modalFiltroVisible && (
           <div className="modalOverlayPro">
@@ -412,34 +432,176 @@ const HomeScreen = () => {
                   </div>
                   <span className="labelFiltro">Buscar por Nome ou ID:</span>
                   <input type="text" className="searchInputModal" placeholder="Ex: Mercantil ou #55391..." value={buscaPesquisa} onChange={(e) => setBuscaPesquisa(e.target.value)} autoFocus />
-                  
-                  {/* 🔥 BOTÕES DE DIA DA SEMANA REMOVIDOS AQUI! */}
-
                   <button className="aplicarFiltroButton" onClick={() => setModalFiltroVisible(false)}>APLICAR BUSCA</button>
               </div>
           </div>
       )}
 
-      {/* Restante dos modais mantidos idênticos... */}
+      {/* 🔥 MODAL ENTREGAS COMPLETO */}
+      {modalEntregasVisible && (
+        <div className="modalOverlayPro">
+          <div className="modalFiltroContent">
+            <div className="modalHeader">
+              <h3 className="modalTitle">Janela de Entrega 🚚</h3>
+              <button onClick={fecharModalEntregas} className="closeModalText">FECHAR ❌</button>
+            </div>
+            <div className="novaPendenciaRow">
+              <input type="number" className="novaPendenciaInput" placeholder="ID do PDV (ex: 55107)" value={pesquisaRastreio} onChange={(e) => setPesquisaRastreio(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleBuscarEntrega()} />
+              <button className="btnAddPendencia btnBuscaRastreio" onClick={handleBuscarEntrega} disabled={isLoadingRastreio}>{isLoadingRastreio ? '...' : 'BUSCAR'}</button>
+            </div>
+            {buscouRastreio && !isLoadingRastreio && dadosRastreio && (
+              <div className="rastreioCardClean">
+                <div className="rastreioPdvHeaderClean"><span className="rastreioPdvNomeClean">{dadosRastreio.nomePdv}</span><span className="rastreioPdvIdClean">#{dadosRastreio.pdvId}</span></div>
+                <div className="rastreioStatusBox">
+                  {dadosRastreio.status === 'CONCLUDED' ? (<><span className="rastreioStatusText statusGreen">✅ ENTREGUE</span><span className="rastreioSubStatus">A mercadoria já foi entregue no local.</span></>) : dadosRastreio.status === 'IN_TREATMENT' ? (<><span className="rastreioStatusText statusTratamento">🛠️ EM TRATAMENTO</span><span className="rastreioSubStatus">Aguardando resolução pela central.</span></>) : dadosRastreio.status === 'RESCHEDULED' ? (<><span className="rastreioStatusText statusDanger">🔄 REPROGRAMADA</span><span className="rastreioSubStatus">A entrega foi adiada para outra data.</span></>) : (<><span className="rastreioStatusText statusOrange">⏳ JANELA PENDENTE</span><span className="rastreioSubStatus">Caminhão a caminho. Aguarde no local.</span></>)}
+                </div>
+                <div className="rastreioInfoRowMotorista"><span className="rastreioLabelClean">Motorista Responsável</span><span className="rastreioDriverClean">{dadosRastreio.motorista}</span></div>
+                <div className="rastreioInfoRowMotorista" style={{marginTop: '10px'}}><span className="rastreioLabelClean">⏰ Status do Horário / Fila</span><span className="rastreioDriverClean">{dadosRastreio.horario}</span></div>
+              </div>
+            )}
+            {buscouRastreio && !isLoadingRastreio && !dadosRastreio && (
+              <div className="rastreioCardClean rastreioErroCard"><span className="rastreioStatusText statusDanger" style={{textAlign: 'center', width: '100%'}}>Nenhuma carga encontrada!</span></div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 🔥 MODAL PENDÊNCIAS COMPLETO */}
       {modalPendenciasVisible && (
           <div className="modalOverlayPro">
-              {/* ... (código do modal de pendências omitido para não ficar gigante, é o mesmo do anterior) ... */}
+              <div className="modalFiltroContent modalPendenciasContent">
+                  <div className="modalHeader">
+                      <div>
+                          <h3 className="modalTitle">Painel de Pendências</h3>
+                          <span className="subTitlePendencias">Gestão global de acordos.</span>
+                      </div>
+                      <button onClick={() => setModalPendenciasVisible(false)} className="closeModalText">FECHAR ❌</button>
+                  </div>
+                  <input type="text" className="searchInputModal" placeholder="Buscar por cliente ou problema..." value={buscaPendencia} onChange={(e) => setBuscaPendencia(e.target.value)} />
+                  <div className="abasPendencias">
+                      <button className={`abaBtn ${filtroPendenciasGlobal === 'PENDENTE' ? 'abaBtnAtiva' : ''}`} onClick={() => setFiltroPendenciasGlobal('PENDENTE')}>⏳ PENDENTES</button>
+                      <button className={`abaBtn ${filtroPendenciasGlobal === 'RESOLVIDO' ? 'abaBtnAtiva' : ''}`} onClick={() => setFiltroPendenciasGlobal('RESOLVIDO')}>✅ RESOLVIDAS</button>
+                  </div>
+                  <div className="scrollPendencias">
+                      {pendenciasFiltradasEBusca.length === 0 ? (
+                          <p className="emptyPendenciasText">Nenhuma pendência encontrada com este filtro.</p>
+                      ) : (
+                          pendenciasFiltradasEBusca.map((pendencia, index) => (
+                              <div key={index} className="pendenciaCardGlobal">
+                                  <div className="pendenciaPdvInfo">
+                                      <span className="pendenciaPdvName">{pendencia.pdvNome}</span>
+                                      {pendencia.pdvId !== 0 && <span className="pendenciaPdvId">#{pendencia.pdvId}</span>}
+                                  </div>
+                                  <div className="pendenciaTextoBox">
+                                      <div className={`statusIndicatorGlobal ${pendencia.status === 'RESOLVIDO' ? 'statusResolvido' : 'statusPendente'}`}></div>
+                                      <span className={`pendenciaTexto ${pendencia.status === 'RESOLVIDO' ? 'pendenciaTextoRiscado' : ''}`}>
+                                        {formatarTextoPendencia(pendencia.texto, pendencia.status)}
+                                      </span>
+                                  </div>
+                                  <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '10px' }}>
+                                    {pendencia.pdvId === 0 ? (
+                                        <>
+                                            <button className="btnAcaoVermelho" style={{ padding: '8px 12px', fontSize: '12px', minWidth: 'auto' }} onClick={() => handleAcaoManual(pendencia.id, 'deletar')}>🗑️ APAGAR</button>
+                                            <button className="btnIniciarVisitaDestaque" style={{ padding: '8px 12px', fontSize: '12px', minWidth: 'auto' }} onClick={() => handleAcaoManual(pendencia.id, 'resolver')}>✅ RESOLVER</button>
+                                        </>
+                                    ) : (
+                                        <button className="irParaPdvBtnAmarelo" onClick={() => { setModalPendenciasVisible(false); navigate('/visita', { state: { pdvId: pendencia.pdvId, pdvNome: pendencia.pdvNome, modo: 'PENDENCIAS_ONLY', visitaId: pendencia.id } }); }}>
+                                          ABRIR VISITA ➔
+                                        </button>
+                                    )}
+                                  </div>
+                              </div>
+                          ))
+                      )}
+                  </div>
+              </div>
           </div>
       )}
+
+      {/* 🔥 MODAL HUB DE EXECUÇÃO COMPLETO COM NOVOS CAMPOS */}
+      {modalManualVisible && (
+          <div className="modalOverlayPro">
+              <div className="modalFiltroContent" style={{ paddingBottom: '30px' }}>
+                  <div className="modalHeader">
+                      <h3 className="modalTitle">Hub de Execução ✍️</h3>
+                      <button onClick={() => setModalManualVisible(false)} className="closeModalText">FECHAR ❌</button>
+                  </div>
+                  <p style={{ color: '#666', fontSize: '14px', marginBottom: '15px' }}>
+                    Adicione manualmente Subdivisões, Ofertas, Missões e Pendências. Tudo será somado à sua barra de Performance!
+                  </p>
+                  
+                  {/* NOVOS CAMPOS DO HUB */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
+                    <div className="inputGroupAvulso">
+                      <label style={{ fontSize: '12px' }}>🛒 Compras:</label>
+                      <input type="number" placeholder="0" value={formManual.compra} onChange={(e) => setFormManual({...formManual, compra: e.target.value})} />
+                    </div>
+                    <div className="inputGroupAvulso">
+                      <label style={{ fontSize: '12px' }}>🍺 Cerveja:</label>
+                      <input type="number" placeholder="0" value={formManual.cerveja} onChange={(e) => setFormManual({...formManual, cerveja: e.target.value})} />
+                    </div>
+                    <div className="inputGroupAvulso">
+                      <label style={{ fontSize: '12px' }}>🥤 NAB:</label>
+                      <input type="number" placeholder="0" value={formManual.nab} onChange={(e) => setFormManual({...formManual, nab: e.target.value})} />
+                    </div>
+                    <div className="inputGroupAvulso">
+                      <label style={{ fontSize: '12px' }}>📺 MKT:</label>
+                      <input type="number" placeholder="0" value={formManual.mkt} onChange={(e) => setFormManual({...formManual, mkt: e.target.value})} />
+                    </div>
+                  </div>
+
+                  <div className="inputGroupAvulso">
+                    <label>🏷️ Ofertas de Pontos:</label>
+                    <input type="number" placeholder="0" value={formManual.ofertas} onChange={(e) => setFormManual({...formManual, ofertas: e.target.value})} />
+                  </div>
+
+                  <div className="inputGroupAvulso">
+                    <label>🎯 Missões:</label>
+                    <input type="number" placeholder="0" value={formManual.missoes} onChange={(e) => setFormManual({...formManual, missoes: e.target.value})} />
+                  </div>
+
+                  {/* NOVO CHECKBOX COMPRADOR */}
+                  <div style={{ marginTop: '15px', padding: '10px', backgroundColor: '#f4f5f7', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontWeight: 'bold', fontSize: '14px', color: '#333' }}>🛒 Adicionar 1 Comprador?</span>
+                    <input 
+                      type="checkbox" 
+                      checked={formManual.comprador} 
+                      onChange={(e) => setFormManual({...formManual, comprador: e.target.checked})} 
+                      style={{ width: '20px', height: '20px', accentColor: '#28a745' }}
+                    />
+                  </div>
+
+                  <div style={{ marginTop: '20px' }}>
+                    <label className="labelFiltro" style={{ color: '#000' }}>⚠️ Novo Registro de Pendência:</label>
+                    <textarea 
+                        className="textAreaAvulso" 
+                        rows="3" 
+                        placeholder="Ex: Falar com Gerente de Vendas sobre material..."
+                        value={formManual.pendencia}
+                        onChange={(e) => setFormManual({...formManual, pendencia: e.target.value})}
+                    />
+                  </div>
+
+                  <button className="btnSalvarPendência" onClick={handleSalvarManual} disabled={isSavingManual}>
+                      {isSavingManual ? 'SALVANDO...' : 'SALVAR NA NUVEM ☁️'}
+                  </button>
+              </div>
+          </div>
+      )}
+
+      {/* AVISOS */}
       {modalReabrir.visible && (
         <div className="modalOverlayPro"><div className="modalBoxPro"><div className="modalHeaderPro"><h3>Visita Finalizada ✅</h3></div><div className="modalBodyPro"><p>Deseja reabrir a visita?</p></div><div className="modalFooterPro"><button className="btnModalCancel" onClick={() => setModalReabrir({ visible: false, pdv: null })}>CANCELAR</button><button className="btnModalConfirm" onClick={confirmarReabertura}>SIM</button></div></div></div>
       )}
+
       {modalFinalizar && (
         <div className="modalOverlayPro"><div className="modalBoxPro"><div className="modalHeaderPro"><h3>Encerrar Rota? ⏹️</h3></div><div className="modalBodyPro"><p>Deseja finalizar a sua jornada e ver o Resumo do Dia?</p></div><div className="modalFooterPro"><button className="btnModalCancel" onClick={() => setModalFinalizar(false)}>VOLTAR</button><button className="btnModalConfirm" onClick={confirmarFinalizacaoJornada}>FINALIZAR</button></div></div></div>
       )}
-      {modalManualVisible && (
-          <div className="modalOverlayPro">
-            {/* ... (código do modal do Hub omitido para não ficar gigante, é o mesmo do anterior) ... */}
-          </div>
-      )}
+
       {toast.visible && (
         <div className={`toastGlobalPro ${toast.type === 'success' ? 'toastSuccess' : 'toastError'}`}><span style={{ fontSize: '20px' }}>{toast.type === 'success' ? '✅' : '❌'}</span><p className="toastText">{toast.message}</p></div>
       )}
+
     </div>
   );
 };
