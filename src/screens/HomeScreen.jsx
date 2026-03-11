@@ -89,14 +89,14 @@ const HomeScreen = () => {
     }
   };
 
-  // 🔥 COMPONENTE DE CONTADOR PARA O HUB (MESMO ESTILO DO VISITA SCREEN)
+  // 🔥 ESSA FUNÇÃO DEVE FICAR DENTRO DO HOMESCREEN, ANTES DO RETURN
   const renderContadorHub = (titulo, valor, campo, cor) => (
-    <div className="inputGroupAvulso" style={{ borderLeft: `5px solid ${cor}`, paddingLeft: '10px', marginBottom: '15px' }}>
-      <label style={{ fontSize: '13px', fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>{titulo}</label>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <button className="btnControl" style={{ width: '40px', height: '40px' }} onClick={() => setFormManual({...formManual, [campo]: Math.max(0, Number(valor) - 1)})}>-</button>
-        <input type="number" className="contadorInput" style={{ width: '60px', textAlign: 'center' }} value={valor} readOnly />
-        <button className="btnControl" style={{ width: '40px', height: '40px', backgroundColor: cor, color: '#FFF' }} onClick={() => setFormManual({...formManual, [campo]: Number(valor) + 1})}>+</button>
+    <div className="contadorCard" style={{ borderLeft: `6px solid ${cor}`, marginBottom: '12px', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <span className="contadorTitle">{titulo}</span>
+      <div className="contadorControls" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <button className="btnControl" onClick={() => setFormManual({...formManual, [campo]: Math.max(0, (Number(valor) || 0) - 1)})}>-</button>
+        <input type="number" className="contadorInput" value={valor} style={{ width: '50px', textAlign: 'center' }} readOnly />
+        <button className="btnControl" style={{ backgroundColor: cor, color: "#FFF" }} onClick={() => setFormManual({...formManual, [campo]: (Number(valor) || 0) + 1})}>+</button>
       </div>
     </div>
   );
@@ -535,47 +535,40 @@ const HomeScreen = () => {
           </div>
       )}
 
-      {/* 🔥 MODAL HUB DE EXECUÇÃO COM DESIGN PRO (CONTADORES) */}
+      {/* 🔥 SUBSTITUA TODO O SEU MODAL POR ESTE ABAIXO */}
       {modalManualVisible && (
           <div className="modalOverlayPro">
-              <div className="modalFiltroContent" style={{ paddingBottom: '30px' }}>
+              <div className="modalFiltroContent" style={{ paddingBottom: '30px', maxWidth: '90%', width: '400px' }}>
                   <div className="modalHeader">
                       <h3 className="modalTitle">Hub de Execução ✍️</h3>
                       <button onClick={() => setModalManualVisible(false)} className="closeModalText">FECHAR ❌</button>
                   </div>
-                  <p style={{ color: '#666', fontSize: '14px', marginBottom: '15px' }}>
-                    Adicione manualmente Subdivisões, Ofertas, Missões e Pendências. Tudo será somado à sua barra de Performance!
+                  <p style={{ color: '#666', fontSize: '13px', marginBottom: '20px' }}>
+                    Registo manual de Subdivisões, Ofertas e Missões.
                   </p>
                   
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
+                  <div style={{ maxHeight: '60vh', overflowY: 'auto', paddingRight: '5px', display: 'flex', flexDirection: 'column' }}>
+                    <h4 style={{ fontSize: '14px', marginBottom: '15px', color: '#000', borderBottom: '1px solid #eee', paddingBottom: '5px' }}>📋 Tasks do Dia</h4>
+                    
+                    {/* 🔥 AGORA UM EMBAIXO DO OUTRO */}
                     {renderContadorHub("🛒 Compra", formManual.compra, "compra", "#000")}
                     {renderContadorHub("🍺 Cerveja", formManual.cerveja, "cerveja", "#000")}
                     {renderContadorHub("🥤 NAB", formManual.nab, "nab", "#000")}
                     {renderContadorHub("📺 MKT", formManual.mkt, "mkt", "#000")}
-                  </div>
 
-                  {renderContadorHub("🏷️ Ofertas de Pontos", formManual.ofertas, "ofertas", "#17a2b8")}
-                  {renderContadorHub("🎯 Missões", formManual.missoes, "missoes", "#FF4500")}
+                    <h4 style={{ fontSize: '14px', margin: '20px 0 15px', color: '#000', borderBottom: '1px solid #eee', paddingBottom: '5px' }}>🚀 Mercado</h4>
+                    {renderContadorHub("🏷️ Ofertas de Pontos", formManual.ofertas, "ofertas", "#17a2b8")}
+                    {renderContadorHub("🎯 Missões", formManual.missoes, "missoes", "#FF4500")}
 
-                  <div style={{ marginTop: '15px', padding: '10px', backgroundColor: '#f4f5f7', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ fontWeight: 'bold', fontSize: '14px', color: '#333' }}>🛒 Adicionar 1 Comprador?</span>
-                    <input 
-                      type="checkbox" 
-                      checked={formManual.comprador} 
-                      onChange={(e) => setFormManual({...formManual, comprador: e.target.checked})} 
-                      style={{ width: '24px', height: '24px', accentColor: '#28a745' }}
-                    />
-                  </div>
+                    <div style={{ marginTop: '15px', padding: '15px', backgroundColor: '#f4f5f7', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: '1px solid #ddd' }}>
+                      <span style={{ fontWeight: 'bold', fontSize: '14px', color: '#333' }}>🛒 Adicionar 1 Comprador?</span>
+                      <input type="checkbox" checked={formManual.comprador} onChange={(e) => setFormManual({...formManual, comprador: e.target.checked})} style={{ width: '24px', height: '24px', accentColor: '#28a745' }} />
+                    </div>
 
-                  <div style={{ marginTop: '20px' }}>
-                    <label className="labelFiltro" style={{ color: '#000' }}>⚠️ Novo Registro de Pendência:</label>
-                    <textarea 
-                        className="textAreaAvulso" 
-                        rows="3" 
-                        placeholder="Ex: Falar com Gerente de Vendas sobre material..."
-                        value={formManual.pendencia}
-                        onChange={(e) => setFormManual({...formManual, pendencia: e.target.value})}
-                    />
+                    <div style={{ marginTop: '20px' }}>
+                      <label className="labelFiltro" style={{ color: '#000', fontWeight: 'bold' }}>⚠️ Novo Registro de Pendência:</label>
+                      <textarea className="textAreaAvulso" rows="3" placeholder="Ex: Verificar material de ponto de venda..." value={formManual.pendencia} onChange={(e) => setFormManual({...formManual, pendencia: e.target.value})} />
+                    </div>
                   </div>
 
                   <button className="btnSalvarPendência" onClick={handleSalvarManual} disabled={isSavingManual}>
