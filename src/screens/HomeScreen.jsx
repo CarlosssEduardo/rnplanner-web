@@ -21,9 +21,6 @@ const HomeScreen = () => {
 
   const setorLogado = localStorage.getItem('setorAtivo') || '---';
   
-  // ==========================================
-  // ESTADOS PRINCIPAIS
-  // ==========================================
   const [pdvs, setPdvs] = useState([]);
   const [dashboard, setDashboard] = useState({ 
     pdvsVisitados: 0, 
@@ -36,6 +33,7 @@ const HomeScreen = () => {
     tasksNabTotal: 0, 
     tasksMktTotal: 0,
     compradoresTotal: 0,
+    positivacaoTotal: 0, // 🚀 NOVA GAVETA ZERO
     metaTasksDia: 37,
     metaMissoesDia: 10,
     metaOfertasDia: 10,
@@ -43,32 +41,29 @@ const HomeScreen = () => {
     metaTasksCompraDia: 10,
     metaTasksCervejaDia: 9,
     metaTasksNabDia: 9,
-    metaTasksMktDia: 9
+    metaTasksMktDia: 9,
+    metaPositivacaoDia: 9 // 🚀 META POSITIVAÇÃO
   });
   const [pendenciasGlobais, setPendenciasGlobais] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [jornadaAtiva, setJornadaAtiva] = useState(() => localStorage.getItem('jornadaAtiva') === 'true');
 
-  // Filtros Globais e Abas
   const [buscaPesquisa, setBuscaPesquisa] = useState('');
   const [buscaPendencia, setBuscaPendencia] = useState('');
   const [filtroConcluidas, setFiltroConcluidas] = useState('PENDENTES');
   const [filtroPendenciasGlobal, setFiltroPendenciasGlobal] = useState('PENDENTE');
 
-  // Controle de Modais 
   const [modalFiltroVisible, setModalFiltroVisible] = useState(false);
   const [modalEntregasVisible, setModalEntregasVisible] = useState(false);
   const [modalPendenciasVisible, setModalPendenciasVisible] = useState(false);
   const [modalReabrir, setModalReabrir] = useState({ visible: false, pdv: null });
   const [modalFinalizar, setModalFinalizar] = useState(false);
 
-  // Estados do Rastreio
   const [pesquisaRastreio, setPesquisaRastreio] = useState('');
   const [dadosRastreio, setDadosRastreio] = useState(null);
   const [isLoadingRastreio, setIsLoadingRastreio] = useState(false);
   const [buscouRastreio, setBuscouRastreio] = useState(false);
 
-  // Estados Hub de Execução
   const [modalManualVisible, setModalManualVisible] = useState(false);
   const [formManual, setFormManual] = useState({ 
     ofertas: 0, missoes: 0, pendencia: '',
@@ -77,9 +72,6 @@ const HomeScreen = () => {
   const [isSavingManual, setIsSavingManual] = useState(false);
   const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
 
-  // ==========================================
-  // UTILITÁRIO
-  // ==========================================
   const formatarTextoPendencia = (texto) => {
     try {
       const parsed = JSON.parse(texto);
@@ -108,9 +100,6 @@ const HomeScreen = () => {
     </div>
   );
 
-  // ==========================================
-  // EFEITOS
-  // ==========================================
   useEffect(() => {
     localStorage.setItem('jornadaAtiva', jornadaAtiva);
     if (jornadaAtiva) carregarDados();
@@ -135,9 +124,6 @@ const HomeScreen = () => {
     setTimeout(() => setToast({ visible: false, message: '', type: 'success' }), 4000);
   };
 
-  // ==========================================
-  // AÇÕES
-  // ==========================================
   const carregarDados = async () => {
     try {
       setIsLoading(true);
@@ -200,7 +186,6 @@ const HomeScreen = () => {
     setIsSavingManual(true);
     try {
       const BASE_URL = 'https://rnplanner-api-ekc2hratcvgqhgc5.brazilsouth-01.azurewebsites.net'; 
-      
       const payload = {
         setor: setorLogado,
         ofertas: Number(formManual.ofertas) || 0,
@@ -236,7 +221,7 @@ const HomeScreen = () => {
       showToast("Hub de Execução atualizado com sucesso! 🚀", "success");
     } catch (error) {
       console.error(error);
-      showToast("Erro ao salvar!", "error");
+      showToast("Erro ao salvar! Verifique se o Back-end está online.", "error");
     } finally {
       setIsSavingManual(false);
     }
@@ -284,10 +269,6 @@ const HomeScreen = () => {
     const matchConcluidas = filtroConcluidas === 'PENDENTES' ? !isConcluido : isConcluido;
     return matchBusca && matchConcluidas;
   });
-
-  // ==========================================
-  // RENDERIZAÇÃO DE BARRAS
-  // ==========================================
 
   const renderGlobalProgressBar = (atual, meta) => {
     const metaReal = meta > 0 ? meta : 1;
@@ -368,9 +349,10 @@ const HomeScreen = () => {
                 {!isLoading && (
                   <div className="dashboard-card-glass">
                     
+                    {/* 🚀 O CÁLCULO GIGANTE DA PERFORMANCE AGORA INCLUI A POSITIVAÇÃO */}
                     {renderGlobalProgressBar(
-                      (dashboard.tasksTotal + dashboard.ofertasTotal + dashboard.missoesTotal + (dashboard.compradoresTotal || 0)), 
-                      (dashboard.metaTasksDia + dashboard.metaMissoesDia + dashboard.metaOfertasDia + dashboard.metaCompradorDia)
+                      (dashboard.tasksTotal + dashboard.ofertasTotal + dashboard.missoesTotal + (dashboard.compradoresTotal || 0) + (dashboard.positivacaoTotal || 0)), 
+                      (dashboard.metaTasksDia + dashboard.metaMissoesDia + dashboard.metaOfertasDia + dashboard.metaCompradorDia + dashboard.metaPositivacaoDia)
                     )}
 
                     <hr style={{ borderColor: 'rgba(255,255,255,0.1)', margin: '15px 0' }}/>
@@ -378,11 +360,13 @@ const HomeScreen = () => {
                     {renderProgressBar(dashboard.tasksTotal, dashboard.metaTasksDia, '#FFD500', '📋 Tasks Totais')}
                     {renderProgressBar(dashboard.ofertasTotal, dashboard.metaOfertasDia, '#17a2b8', '🏷️ Ofertas')}
                     {renderProgressBar(dashboard.missoesTotal, dashboard.metaMissoesDia, '#FF4500', '🎯 Missões')}
+                    
+                    {/* 🚀 A SUA NOVA BARRA DE POSITIVAÇÃO AQUI */}
+                    {renderProgressBar(dashboard.positivacaoTotal || 0, dashboard.metaPositivacaoDia, '#28a745', '✅ Meta Positivação')}
 
                     <hr style={{ borderColor: 'rgba(255,255,255,0.1)', margin: '15px 0' }}/>
                     <h3 style={{color: '#FFF', fontSize: '14px', marginBottom: '12px'}}>Subdivisão das Tasks</h3>
                     
-                    {/* 🔥 AS VARIÁVEIS CORRETAS ESTÃO AQUI. ADEUS BUG DO "1" NO SETOR 101 */}
                     {renderProgressBar(dashboard.tasksCompraTotal, dashboard.metaTasksCompraDia, '#FFD500', '🛒 Compras')}
                     {renderProgressBar(dashboard.tasksCervejaTotal, dashboard.metaTasksCervejaDia, '#FFD500', '🍺 Cerveja')}
                     {renderProgressBar(dashboard.tasksNabTotal, dashboard.metaTasksNabDia, '#FFD500', '🥤 NAB')}
@@ -403,7 +387,6 @@ const HomeScreen = () => {
         </div>
       </div>
 
-      {/* 🔥 A MÁGICA ACONTECE AQUI: A lista branca SÓ aparece se houver PDVs importados! */}
       {jornadaAtiva && pdvs.length > 0 && (
         <div className="mainContent">
           <div className="searchBarContainer">
@@ -444,10 +427,6 @@ const HomeScreen = () => {
           </div>
         </div>
       )}
-
-      {/* ========================================== */}
-      {/* MODAIS                                     */}
-      {/* ========================================== */}
 
       {modalFiltroVisible && (
           <div className="modalOverlayPro">
