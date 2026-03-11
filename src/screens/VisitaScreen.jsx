@@ -16,6 +16,7 @@ const COLORS = {
   SUCCESS: "#28a745",
   MISSAO_COLOR: "#FF4500",
   OFERTA_COLOR: "#17a2b8",
+  POSITIVACAO_COLOR: "#9c27b0" // 🔥 NOVA COR ROXA ADICIONADA!
 };
 
 const VisitaScreen = () => {
@@ -219,7 +220,7 @@ const VisitaScreen = () => {
               {renderContadorPro("🏷️ Ofertas", qtdOfertas, setQtdOfertas, COLORS.OFERTA_COLOR)}
               {renderContadorPro("🎯 Missões", qtdMissoes, setQtdMissoes, COLORS.MISSAO_COLOR)}
               {/* 🔥 NOVO: Campo de Positivação */}
-              {renderContadorPro("✅ Positivação", qtdPositivacao, setQtdPositivacao, COLORS.SUCCESS)}
+              {renderContadorPro("✅ Positivação", qtdPositivacao, setQtdPositivacao, COLORS.POSITIVACAO_COLOR)}
             </div>
 
             {/* 🔥 LÓGICA DO COMPRADOR: Só aparece se o PDV for "NÃO" no banco */}

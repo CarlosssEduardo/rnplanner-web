@@ -17,20 +17,31 @@ export const iniciarVisita = async (pdvId) => {
   return response.data;
 };
 
-// 🔥 ATUALIZADO: Agora enviamos as subdivisões e o status de comprador para o Java!
-export const finalizarVisita = async (visitaId, anotacao, tasks, ofertas, missoes, compra, cerveja, nab, mkt, comprador) => {
-  const response = await api.put(`/visitas/${visitaId}/finalizar`, {
-    anotacao,
-    qtdTasks: tasks,
-    qtdOfertas: ofertas,
-    qtdMissoes: missoes,
-    qtdTasksCompra: compra,
-    qtdTasksCerveja: cerveja,
-    qtdTasksNab: nab,
-    qtdTasksMkt: mkt,
-    virouComprador: comprador
+export const finalizarVisita = async (
+  id, anotacao, qtdTasks, qtdOfertas, qtdMissoes,
+  qtdTasksCompra, qtdTasksCerveja, qtdTasksNab, qtdTasksMkt,
+  virouComprador, qtdPositivacao
+) => {
+  // Ajuste a URL abaixo se a sua for diferente, mas o "body" tem de ser exatamente este!
+  const BASE_URL = 'https://rnplanner-api-ekc2hratcvgqhgc5.brazilsouth-01.azurewebsites.net';
+  
+  const response = await fetch(`${BASE_URL}/visitas/${id}/finalizar`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      anotacao: anotacao,
+      qtdTasks: qtdTasks,
+      qtdOfertas: qtdOfertas,
+      qtdMissoes: qtdMissoes,
+      qtdTasksCompra: qtdTasksCompra,
+      qtdTasksCerveja: qtdTasksCerveja,
+      qtdTasksNab: qtdTasksNab,
+      qtdTasksMkt: qtdTasksMkt,
+      virouComprador: virouComprador,
+      qtdPositivacao: qtdPositivacao // 🔥 AGORA SIM ELE MANDA A POSITIVAÇÃO!
+    })
   });
-  return response.data;
+  return await response.json();
 };
 
 export const obterDashboardGeral = async (setorParam) => {

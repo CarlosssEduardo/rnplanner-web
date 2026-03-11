@@ -66,7 +66,6 @@ const HomeScreen = () => {
 
   const [modalManualVisible, setModalManualVisible] = useState(false);
   
-  // 🔥 NOVO: Adicionado o positivacao no estado do formulário manual
   const [formManual, setFormManual] = useState({ 
     ofertas: 0, missoes: 0, pendencia: '',
     compra: 0, cerveja: 0, nab: 0, mkt: 0, comprador: 0, positivacao: 0
@@ -198,13 +197,11 @@ const HomeScreen = () => {
         tasksNab: Number(formManual.nab) || 0,
         tasksMkt: Number(formManual.mkt) || 0,
         comprador: formManual.comprador > 0,
-        // 🔥 NOVO: Enviando a gaveta de positivação para o Back-end
         qtdPositivacao: Number(formManual.positivacao) || 0 
       };
 
       payload.tasks = payload.tasksCompra + payload.tasksCerveja + payload.tasksNab + payload.tasksMkt;
 
-      // 🔥 NOVO: A Positivação também aciona o salvamento do formulário
       if (payload.tasks > 0 || payload.ofertas > 0 || payload.missoes > 0 || payload.comprador || payload.qtdPositivacao > 0) {
         await fetch(`${BASE_URL}/lancamento-manual/salvar`, {
           method: 'POST',
@@ -221,7 +218,6 @@ const HomeScreen = () => {
         });
       }
 
-      // Zera o formulário após salvar
       setFormManual({ compra: 0, cerveja: 0, nab: 0, mkt: 0, ofertas: 0, missoes: 0, pendencia: '', comprador: 0, positivacao: 0 });
       setModalManualVisible(false);
       carregarDados(); 
@@ -367,7 +363,8 @@ const HomeScreen = () => {
                     {renderProgressBar(dashboard.ofertasTotal, dashboard.metaOfertasDia, '#17a2b8', '🏷️ Ofertas')}
                     {renderProgressBar(dashboard.missoesTotal, dashboard.metaMissoesDia, '#FF4500', '🎯 Missões')}
                     
-                    {renderProgressBar(dashboard.positivacaoTotal || 0, dashboard.metaPositivacaoDia, '#28a745', '✅ Meta Positivação')}
+                    {/* 🔥 NOVA COR ROXA APLICADA AQUI NO PAINEL */}
+                    {renderProgressBar(dashboard.positivacaoTotal || 0, dashboard.metaPositivacaoDia, '#9c27b0', '✅ Meta Positivação')}
 
                     <hr style={{ borderColor: 'rgba(255,255,255,0.1)', margin: '15px 0' }}/>
                     <h3 style={{color: '#FFF', fontSize: '14px', marginBottom: '12px'}}>Subdivisão das Tasks</h3>
@@ -434,6 +431,7 @@ const HomeScreen = () => {
         </div>
       )}
 
+      {/* MODAIS RESTANTES (FILTRO, ENTREGAS E PENDÊNCIAS)... */}
       {modalFiltroVisible && (
           <div className="modalOverlayPro">
               <div className="modalFiltroContent">
@@ -527,18 +525,26 @@ const HomeScreen = () => {
           </div>
       )}
 
+      {/* 🔥 MODAL DO HUB DE EXECUÇÃO CORRIGIDO (Design flexível para não esmagar os botões) */}
       {modalManualVisible && (
           <div className="modalOverlayPro">
-              <div className="modalFiltroContent" style={{ paddingBottom: '30px', maxWidth: '90%', width: '400px' }}>
-                  <div className="modalHeader">
+              <div className="modalFiltroContent" style={{ 
+                  paddingBottom: '20px', 
+                  maxWidth: '95%', 
+                  width: '420px', 
+                  maxHeight: '90vh', 
+                  display: 'flex', 
+                  flexDirection: 'column' 
+              }}>
+                  <div className="modalHeader" style={{ flexShrink: 0 }}>
                       <h3 className="modalTitle">Hub de Execução ✍️</h3>
                       <button onClick={() => setModalManualVisible(false)} className="closeModalText">FECHAR ❌</button>
                   </div>
-                  <p style={{ color: '#666', fontSize: '13px', marginBottom: '20px' }}>
+                  <p style={{ color: '#666', fontSize: '13px', marginBottom: '15px', flexShrink: 0 }}>
                     Registo manual de Subdivisões, Ofertas e Missões.
                   </p>
                   
-                  <div style={{ maxHeight: '60vh', overflowY: 'auto', paddingRight: '5px', display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ overflowY: 'auto', flexGrow: 1, paddingRight: '10px', marginBottom: '15px' }}>
                     <h4 style={{ fontSize: '14px', marginBottom: '15px', color: '#000', borderBottom: '1px solid #eee', paddingBottom: '5px' }}>📋 Tasks do Dia</h4>
                     
                     {renderContadorHub("🛒 Compra", formManual.compra, "compra", "#000")}
@@ -549,8 +555,9 @@ const HomeScreen = () => {
                     <h4 style={{ fontSize: '14px', margin: '20px 0 15px', color: '#000', borderBottom: '1px solid #eee', paddingBottom: '5px' }}>🚀 Mercado</h4>
                     {renderContadorHub("🏷️ Ofertas de Pontos", formManual.ofertas, "ofertas", "#17a2b8")}
                     {renderContadorHub("🎯 Missões", formManual.missoes, "missoes", "#FF4500")}
-                    {/* 🔥 NOVO: Contador manual de Positivação */}
-                    {renderContadorHub("✅ Positivação", formManual.positivacao, "positivacao", "#28a745")}
+                    
+                    {/* 🔥 NOVA COR ROXA APLICADA AQUI NO MODAL MANUAL */}
+                    {renderContadorHub("✅ Positivação", formManual.positivacao, "positivacao", "#9c27b0")}
 
                     <h4 style={{ fontSize: '14px', margin: '20px 0 15px', color: '#000', borderBottom: '1px solid #eee', paddingBottom: '5px' }}>🛒 Conversão</h4>
                     {renderContadorHub("🛒 Comprador", formManual.comprador, "comprador", "#28a745")}     
@@ -561,7 +568,7 @@ const HomeScreen = () => {
                     </div>
                   </div>
 
-                  <button className="btnSalvarPendência" onClick={handleSalvarManual} disabled={isSavingManual}>
+                  <button className="btnSalvarPendência" style={{ flexShrink: 0 }} onClick={handleSalvarManual} disabled={isSavingManual}>
                       {isSavingManual ? 'SALVANDO...' : 'SALVAR NA NUVEM ☁️'}
                   </button>
               </div>
