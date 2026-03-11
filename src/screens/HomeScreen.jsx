@@ -65,9 +65,11 @@ const HomeScreen = () => {
   const [buscouRastreio, setBuscouRastreio] = useState(false);
 
   const [modalManualVisible, setModalManualVisible] = useState(false);
+  
+  // 🔥 NOVO: Adicionado o positivacao no estado do formulário manual
   const [formManual, setFormManual] = useState({ 
     ofertas: 0, missoes: 0, pendencia: '',
-    compra: 0, cerveja: 0, nab: 0, mkt: 0, comprador: 0 
+    compra: 0, cerveja: 0, nab: 0, mkt: 0, comprador: 0, positivacao: 0
   });
   const [isSavingManual, setIsSavingManual] = useState(false);
   const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
@@ -142,7 +144,6 @@ const HomeScreen = () => {
     }
   };
 
-  // 🔥 SOLUÇÃO: Passar o idUnico para o backend encontrar a chave primária
   const handlePressPdv = (pdv) => {
     const isConcluido = (dashboard.pdvsVisitadosIds || []).map(String).includes(String(pdv.idUnico)) || 
                         (dashboard.pdvsVisitadosIds || []).map(String).includes(String(pdv.id)); 
@@ -153,7 +154,6 @@ const HomeScreen = () => {
     }
   };
 
-  // 🔥 SOLUÇÃO: Passar o idUnico aqui também
   const confirmarReabertura = () => {
     if (modalReabrir.pdv) {
         navigate('/visita', { state: { pdvId: modalReabrir.pdv.idUnico || modalReabrir.pdv.id, pdvNome: modalReabrir.pdv.nome } });
@@ -197,12 +197,15 @@ const HomeScreen = () => {
         tasksCerveja: Number(formManual.cerveja) || 0,
         tasksNab: Number(formManual.nab) || 0,
         tasksMkt: Number(formManual.mkt) || 0,
-        comprador: formManual.comprador > 0
+        comprador: formManual.comprador > 0,
+        // 🔥 NOVO: Enviando a gaveta de positivação para o Back-end
+        qtdPositivacao: Number(formManual.positivacao) || 0 
       };
 
       payload.tasks = payload.tasksCompra + payload.tasksCerveja + payload.tasksNab + payload.tasksMkt;
 
-      if (payload.tasks > 0 || payload.ofertas > 0 || payload.missoes > 0 || payload.comprador) {
+      // 🔥 NOVO: A Positivação também aciona o salvamento do formulário
+      if (payload.tasks > 0 || payload.ofertas > 0 || payload.missoes > 0 || payload.comprador || payload.qtdPositivacao > 0) {
         await fetch(`${BASE_URL}/lancamento-manual/salvar`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -218,7 +221,8 @@ const HomeScreen = () => {
         });
       }
 
-      setFormManual({ compra: 0, cerveja: 0, nab: 0, mkt: 0, ofertas: 0, missoes: 0, pendencia: '', comprador: 0 });
+      // Zera o formulário após salvar
+      setFormManual({ compra: 0, cerveja: 0, nab: 0, mkt: 0, ofertas: 0, missoes: 0, pendencia: '', comprador: 0, positivacao: 0 });
       setModalManualVisible(false);
       carregarDados(); 
       showToast("Hub de Execução atualizado com sucesso! 🚀", "success");
@@ -264,7 +268,6 @@ const HomeScreen = () => {
     return matchStatus && (nomeSeguro.includes(buscaSegura) || textoSeguro.includes(buscaSegura));
   });
 
-  // 🔥 SOLUÇÃO: Verificação ajustada do ID para os filtros e para pintar de verde
   const pdvsFiltrados = pdvs.filter(pdv => {
     const termo = buscaPesquisa.toLowerCase();
     const matchBusca = pdv.nome.toLowerCase().includes(termo) || String(pdv.id).includes(termo);
@@ -405,7 +408,6 @@ const HomeScreen = () => {
 
           <div className="listContainer">
             {pdvsFiltrados.map(pdv => {
-                // 🔥 SOLUÇÃO: Verificação ajustada na hora de pintar o botão
                 const isConcluido = (dashboard.pdvsVisitadosIds || []).map(String).includes(String(pdv.idUnico)) || 
                                     (dashboard.pdvsVisitadosIds || []).map(String).includes(String(pdv.id)); 
                 return (
@@ -547,6 +549,8 @@ const HomeScreen = () => {
                     <h4 style={{ fontSize: '14px', margin: '20px 0 15px', color: '#000', borderBottom: '1px solid #eee', paddingBottom: '5px' }}>🚀 Mercado</h4>
                     {renderContadorHub("🏷️ Ofertas de Pontos", formManual.ofertas, "ofertas", "#17a2b8")}
                     {renderContadorHub("🎯 Missões", formManual.missoes, "missoes", "#FF4500")}
+                    {/* 🔥 NOVO: Contador manual de Positivação */}
+                    {renderContadorHub("✅ Positivação", formManual.positivacao, "positivacao", "#28a745")}
 
                     <h4 style={{ fontSize: '14px', margin: '20px 0 15px', color: '#000', borderBottom: '1px solid #eee', paddingBottom: '5px' }}>🛒 Conversão</h4>
                     {renderContadorHub("🛒 Comprador", formManual.comprador, "comprador", "#28a745")}     

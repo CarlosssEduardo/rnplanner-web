@@ -29,15 +29,17 @@ const VisitaScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  // 🔥 OS NOVOS ESTADOS SUBDIVIDIDOS
+  // Estados
   const [qtdTasksCompra, setQtdTasksCompra] = useState(0);
   const [qtdTasksCerveja, setQtdTasksCerveja] = useState(0);
   const [qtdTasksNab, setQtdTasksNab] = useState(0);
   const [qtdTasksMkt, setQtdTasksMkt] = useState(0);
   const [virouComprador, setVirouComprador] = useState(false);
-
   const [qtdOfertas, setQtdOfertas] = useState(0);
   const [qtdMissoes, setQtdMissoes] = useState(0);
+  
+  // 🔥 NOVO: Estado para a Positivação na tela
+  const [qtdPositivacao, setQtdPositivacao] = useState(0);
 
   const [pendencias, setPendencias] = useState([]);
   const [novaPendencia, setNovaPendencia] = useState("");
@@ -64,7 +66,7 @@ const VisitaScreen = () => {
 
         setVisita(dadosVisita);
         
-        // Puxa do banco se ele fechou a visita e está reabrindo
+        // 🔥 MEMÓRIA ATIVADA: Agora preenche com o que veio do banco!
         setQtdTasksCompra(dadosVisita.qtdTasksCompra || 0);
         setQtdTasksCerveja(dadosVisita.qtdTasksCerveja || 0);
         setQtdTasksNab(dadosVisita.qtdTasksNab || 0);
@@ -72,6 +74,7 @@ const VisitaScreen = () => {
         setVirouComprador(dadosVisita.virouComprador || false);
         setQtdOfertas(dadosVisita.qtdOfertas || 0);
         setQtdMissoes(dadosVisita.qtdMissoes || 0);
+        setQtdPositivacao(dadosVisita.qtdPositivacao || 0); // Puxa a positivação salva
 
         if (dadosVisita.observacao) {
           try {
@@ -97,7 +100,7 @@ const VisitaScreen = () => {
       setModal({ visible: true, title: "Salvar Alterações?", message: "Os acordos e pendências deste PDV serão atualizados.", onConfirm: executarFinalizacao, type: "confirm" });
     } else {
       const total = qtdTasksCompra + qtdTasksCerveja + qtdTasksNab + qtdTasksMkt;
-      const resumo = `📋 Total Tasks: ${total}\n🏷️ Ofertas: ${qtdOfertas}\n🎯 Missões: ${qtdMissoes}\n🛒 Comprador: ${virouComprador ? 'SIM' : 'NÃO'}`;
+      const resumo = `📋 Total Tasks: ${total}\n🏷️ Ofertas: ${qtdOfertas}\n🎯 Missões: ${qtdMissoes}\n✅ Positivação: ${qtdPositivacao}\n🛒 Comprador: ${virouComprador ? 'SIM' : 'NÃO'}`;
       setModal({ visible: true, title: "Finalizar Atendimento?", message: `Confirma os dados da visita no PDV?\n\n${resumo}`, onConfirm: executarFinalizacao, type: "confirm" });
     }
   };
@@ -106,13 +109,12 @@ const VisitaScreen = () => {
     try {
       setIsSaving(true);
       const obs = pendencias.length > 0 ? JSON.stringify(pendencias) : "";
-      
       const totalTasks = qtdTasksCompra + qtdTasksCerveja + qtdTasksNab + qtdTasksMkt;
 
-      // 🔥 Chama a função passando todas as gavetas!
+      // 🔥 Chama a função passando todas as gavetas (incluindo Positivação)
       await finalizarVisita(
         visita.id, obs, totalTasks, qtdOfertas, qtdMissoes,
-        qtdTasksCompra, qtdTasksCerveja, qtdTasksNab, qtdTasksMkt, virouComprador
+        qtdTasksCompra, qtdTasksCerveja, qtdTasksNab, qtdTasksMkt, virouComprador, qtdPositivacao
       );
 
       setModal({
@@ -147,7 +149,6 @@ const VisitaScreen = () => {
     setModal({ visible: true, title: "Apagar Acordo?", message: "Tem certeza que deseja remover este item?", onConfirm: () => { setPendencias(pendencias.filter((p) => p.id !== id)); setModal({ visible: false }); }, type: "confirm" });
   };
 
-  // 🔥 O SEU RENDER PRO ORIGINAL DE VOLTA (COM BOTÕES - 0 +)
   const renderContadorPro = (titulo, valor, setValor, cor) => (
     <div className="contadorCard" style={{ borderLeft: `6px solid ${cor}` }}>
       <span className="contadorTitle">{titulo}</span>
@@ -173,6 +174,9 @@ const VisitaScreen = () => {
         <span className="loadingText">A carregar...</span>
       </div>
     );
+
+  // 🔥 LÓGICA INTELIGENTE: Descobre se o cliente já é comprador de acordo com a base de dados
+  const clienteJaEComprador = visita?.pdv?.comprador === "SIM";
 
   return (
     <div className="safeAreaVisita">
@@ -204,7 +208,6 @@ const VisitaScreen = () => {
           <>
             <div className="sectionVisita">
               <h2 className="sectionTitleVisita">🛒 Subdivisão de Tasks</h2>
-              {/* 🔥 APLICANDO O SEU DESIGN PARA AS 4 NOVAS GAVETAS */}
               {renderContadorPro("🛒 Compra", qtdTasksCompra, setQtdTasksCompra, COLORS.BLACK)}
               {renderContadorPro("🍺 Cerveja", qtdTasksCerveja, setQtdTasksCerveja, COLORS.BLACK)}
               {renderContadorPro("🥤 NAB", qtdTasksNab, setQtdTasksNab, COLORS.BLACK)}
@@ -215,22 +218,25 @@ const VisitaScreen = () => {
               <h2 className="sectionTitleVisita">🚀 Ações de Mercado</h2>
               {renderContadorPro("🏷️ Ofertas", qtdOfertas, setQtdOfertas, COLORS.OFERTA_COLOR)}
               {renderContadorPro("🎯 Missões", qtdMissoes, setQtdMissoes, COLORS.MISSAO_COLOR)}
+              {/* 🔥 NOVO: Campo de Positivação */}
+              {renderContadorPro("✅ Positivação", qtdPositivacao, setQtdPositivacao, COLORS.SUCCESS)}
             </div>
 
-            {/* CHECKBOX DE COMPRADOR */}
-            <div className="contadorCard" style={{ borderLeft: `6px solid ${COLORS.SUCCESS}`, marginBottom: '30px' }}>
-              <span className="contadorTitle">🛒 Virou Comprador Hoje?</span>
-              <input 
-                type="checkbox" 
-                checked={virouComprador} 
-                onChange={(e) => setVirouComprador(e.target.checked)} 
-                style={{ width: '24px', height: '24px', accentColor: COLORS.SUCCESS, marginRight: '10px' }}
-              />
-            </div>
+            {/* 🔥 LÓGICA DO COMPRADOR: Só aparece se o PDV for "NÃO" no banco */}
+            {!clienteJaEComprador && (
+                <div className="contadorCard" style={{ borderLeft: `6px solid ${COLORS.SUCCESS}`, marginBottom: '30px' }}>
+                <span className="contadorTitle">🛒 Virou Comprador Hoje?</span>
+                <input 
+                    type="checkbox" 
+                    checked={virouComprador} 
+                    onChange={(e) => setVirouComprador(e.target.checked)} 
+                    style={{ width: '24px', height: '24px', accentColor: COLORS.SUCCESS, marginRight: '10px' }}
+                />
+                </div>
+            )}
           </>
         )}
 
-        {/* 🔥 AS PENDÊNCIAS INTOCÁVEIS AQUI */}
         <div className="sectionVisita">
           <div className="notebookTitleRow">
             <span className="notebookIcon">📌</span>
