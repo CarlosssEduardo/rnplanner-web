@@ -1,0 +1,378 @@
+/* ==========================================================================
+   HOME SCREEN (DASHBOARD OPERACIONAL) - DESIGN SYSTEM
+   @description Arquitetura visual portando a experiência de React Native (Mobile) para a Web.
+   @architecture Dividido em 8 módulos lógicos: Base, Header, Dashboard, Ações, Listas, Modais, Hub e Feedbacks.
+   ========================================================================== */
+
+/* =========================================
+   1. BASE E LAYOUT (Safe Area)
+   ========================================= */
+.home-safe-area {
+    background-color: #F4F5F7; /* Fundo cinza claro para destacar os cartões brancos */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: sans-serif;
+}
+
+.mainContent { 
+    flex: 1; /* Preenche todo o espaço restante da tela abaixo do Header */
+}
+
+/* =========================================
+   2. HEADER E BRANDING (A Colmeia Corporativa)
+   ========================================= */
+.headerArea {
+    background-color: #000000;
+    padding: 30px 20px 25px 20px;
+    border-bottom: 5px solid #1c9ebe; /* Linha de ancoragem visual da Ambev */
+    position: relative;
+    overflow: hidden; /* Impede que os hexágonos vazem para fora do header */
+}
+
+.headerContentWrapper {
+    position: relative;
+    z-index: 1; /* Mantém o conteúdo clicável acima dos hexágonos de fundo */
+}
+
+.headerTitle {
+    color: #1c9ebe;
+    font-size: 26px;
+    font-weight: 900;
+    margin: 0 0 15px 0;
+}
+
+.headerSubtitle { 
+    color: #FFF; 
+    font-size: 18px; 
+    font-weight: 700; 
+    margin: 0 0 10px 0; 
+}
+
+/* Efeito de Fundo: Colmeia Tecnológica */
+.bgColmeiaContainer {
+    position: absolute;
+    top: 0; bottom: 0; left: 0; right: 0;
+    pointer-events: none; /* UX: Garante que os hexágonos não bloqueiem os cliques nos botões reais */
+    z-index: 0;
+}
+
+.honeycombHex {
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    transform: rotate(45deg);
+    border-radius: 20px;
+    border: 2px solid rgba(229, 184, 0, 0.1);
+}
+
+/* =========================================
+   3. DASHBOARD E CARTÃO DE RESUMO (Glassmorphism)
+   ========================================= */
+.activeHeaderContainer { 
+    margin-bottom: 15px; 
+}
+
+/* Painel de Vidro Dourado (Glassmorphism Premium) */
+.dashboard-card-glass {
+    margin-bottom: 15px;
+    background: linear-gradient(135deg, rgba(30,30,30,0.95) 0%, rgba(10,10,10,0.98) 100%);
+    backdrop-filter: blur(10px); /* Cria o efeito de vidro fosco */
+    -webkit-backdrop-filter: blur(10px); /* Suporte para navegadores baseados em WebKit (Safari/iOS) */
+    border: 1px solid rgba(255, 213, 0, 0.3);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5), inset 0 0 15px rgba(255, 213, 0, 0.05);
+    border-radius: 16px;
+    padding: 20px;
+}
+
+/* Elementos Internos do Cartão de Vidro */
+.dashboard-card-glass .metaContainer { margin-bottom: 15px; }
+.dashboard-card-glass .metaContainer:last-child { margin-bottom: 0; }
+
+/* Barras de Progresso e Metas */
+.metasWrapper { margin-top: 10px; }
+.metaContainer { margin-bottom: 10px; }
+.metaHeader { display: flex; justify-content: space-between; margin-bottom: 5px; }
+.metaLabel, .metaText { color: #FFF; font-size: 13px; font-weight: bold; }
+.successText { color: #28a745; }
+
+.progressBarBackground { 
+    height: 8px; 
+    background-color: #333; 
+    border-radius: 4px; 
+    overflow: hidden; 
+}
+
+.progressBarFill { 
+    height: 100%; 
+    border-radius: 4px; 
+    transition: width 0.3s ease; /* Animação suave quando a meta cresce */
+}
+
+/* =========================================
+   4. AÇÕES RÁPIDAS E NAVEGAÇÃO
+   ========================================= */
+
+/* Card de Boas-Vindas (Jornada Inativa) */
+.iniciarJornadaCard {
+    background-color: #1A1A1A;
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #1c9ebe;
+}
+.iniciarJornadaIcon { font-size: 35px; margin-right: 10px; }
+.iniciarJornadaTextos { flex: 1; }
+.iniciarJornadaTitle { color: #1c9ebe; font-size: 18px; font-weight: bold; margin: 0; }
+.iniciarJornadaDesc { color: #AAA; font-size: 12px; margin: 2px 0 0 0; }
+.iniciarJornadaBtn { background-color: #1c9ebe; padding: 10px 15px; border-radius: 20px; border: none; cursor: pointer; }
+.iniciarJornadaBtnText { color: #000; font-weight: 900; font-size: 13px; }
+
+/* Trinca de Botões Táticos (Pendências / Entregas / Finalizar) */
+.botoes3Row { display: flex; justify-content: space-between; gap: 8px; width: 100%; }
+.btnAcaoAmarelo, .btnAcaoAzul, .btnAcaoVermelho {
+    flex: 1; padding: 10px 0; border-radius: 10px; border: 1px solid;
+    display: flex; align-items: center; justify-content: center; background-color: #333; cursor: pointer;
+}
+.btnAcaoAmarelo { border-color: #FFD500; }
+.btnAcaoTextAmarelo { color: #FFD500; font-weight: bold; font-size: 10px; }
+.btnAcaoAzul { border-color: #0d6efd; }
+.btnAcaoTextAzul { color: #0d6efd; font-weight: bold; font-size: 10px; }
+.btnAcaoVermelho { background-color: #dc3545; border-color: #dc3545; }
+.btnAcaoTextVermelho { color: #FFF; font-weight: bold; font-size: 10px; }
+
+/* Barra de Busca Falsa (UX: Clique abre o modal para evitar teclados quebrando o layout) */
+.searchBarContainer { padding: 16px 16px 10px 16px; }
+.fakeSearchBar {
+    background-color: #FFF; display: flex; align-items: center; width: 100%;
+    padding: 15px; border-radius: 30px; border: 1px solid #D1D5DB; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer;
+}
+.fakeSearchIcon { font-size: 18px; margin-right: 10px; }
+.fakeSearchPlaceholder { color: #888; font-size: 15px; text-align: left; }
+
+/* Filtros Rápidos (Chips) */
+.quickFilterRow { display: flex; padding: 0 16px 15px 16px; gap: 10px; }
+.quickFilterBtn {
+    flex: 1; padding: 12px 0; background-color: #FFF; border-radius: 20px;
+    border: 1px solid #D1D5DB; display: flex; align-items: center; justify-content: center; cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.quickFilterBtnActive { background-color: #E8F5E9; border-color: #28a745; }
+.quickFilterText { color: #6c757d; font-weight: bold; font-size: 13px; }
+.quickFilterTextActive { color: #28a745; }
+
+/* =========================================
+   5. LISTAGEM DE CLIENTES (Cartões de PDV)
+   ========================================= */
+.listContainer { padding: 0 16px 40px 16px; }
+
+.cardPdv {
+    background-color: #FFF; border-radius: 12px; padding: 16px; margin-bottom: 16px;
+    border: 1px solid #D1D5DB; box-shadow: 0 3px 6px rgba(0,0,0,0.05); cursor: pointer;
+    border-left: 6px solid #09c037; /* Identidade lateral default */
+    overflow: hidden;
+}
+.cardPdvConcluido { border: 2px solid #28a745; border-left: 6px solid #28a745; } /* Sobrescreve estilo se finalizado */
+
+.cardHeader { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.cardTitle { font-size: 18px; font-weight: bold; color: #000; flex: 1; margin-right: 10px; }
+.codigoText { font-size: 14px; color: #6c757d; font-weight: bold; background-color: #F4F5F7; padding: 4px 8px; border-radius: 6px; }
+.cardBody { margin-bottom: 15px; }
+.addressText { font-size: 14px; color: #6c757d; font-weight: 500; }
+
+.cardFooter { border-top: 1px solid #F4F5F7; padding-top: 12px; text-align: right; }
+.actionText { font-size: 14px; font-weight: bold; color: #000; }
+.actionTextConcluido { color: #28a745; }
+
+/* Botão Destaque dentro do Cartão */
+.btnIniciarVisitaDestaque {
+    background: linear-gradient(90deg, #1c9ebe, #08aa46);
+    color: #000;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: 900;
+    font-size: 13px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(255, 213, 0, 0.4);
+    transition: transform 0.1s;
+}
+.btnIniciarVisitaDestaque:active { transform: scale(0.95); }
+
+/* =========================================
+   6. SOBREPOSIÇÕES E MODAIS (Bottom Sheets)
+   ========================================= */
+
+/* Fundo Escuro do Modal */
+.modalOverlayPro {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0,0,0,0.6); 
+    display: flex; justify-content: center; align-items: flex-end; /* Alinha na base da tela */
+    z-index: 3000; /* Garante prioridade máxima na UI */
+}
+
+/* Estrutura Base de Modais Grandes (Filtro, Hub, Rastreio) */
+.modalFiltroContent {
+    background-color: #FFF; width: 100%; max-width: 500px;
+    border-radius: 25px 25px 0 0; padding: 25px; 
+    animation: slideUp 0.3s ease-out; /* Animação de entrada fluída */
+}
+
+.modalPendenciasContent { height: 85vh; display: flex; flex-direction: column; }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+/* Cabeçalhos e Controles de Modal */
+.modalHeader { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+.modalTitle { font-size: 20px; font-weight: 900; color: #000; margin: 0; }
+.subTitlePendencias { font-size: 14px; color: #6c757d; margin-top: 2px; display: block; }
+.closeModalText { color: #dc3545; font-weight: bold; font-size: 14px; background: transparent; border: none; cursor: pointer; padding: 0; }
+
+.searchInputModal {
+    background-color: #F4F5F7; border: 1px solid #D1D5DB; border-radius: 10px;
+    padding: 15px; font-size: 16px !important; /* 16px previne zoom automático nativo no iOS */
+    color: #000; width: 100%; box-sizing: border-box; margin-bottom: 15px;
+}
+.labelFiltro { font-size: 14px; font-weight: bold; color: #6c757d; margin-bottom: 10px; display: block; }
+.aplicarFiltroButton { background-color: #000; padding: 18px; border-radius: 30px; color: #1c9ebe; font-weight: bold; font-size: 16px; width: 100%; border: none; cursor: pointer; }
+
+/* Componente de Rastreio (Entregas) */
+.novaPendenciaRow { display: flex; justify-content: center; gap: 10px; width: 100%; margin-bottom: 20px; }
+.novaPendenciaInput { flex: 1; background-color: #FFF; border: 1px solid #D1D5DB; border-radius: 8px; padding: 12px; font-size: 16px !important; }
+.btnBuscaRastreio { background-color: #0d6efd !important; color: #FFF !important; }
+.btnAddPendencia { background-color: #000; padding: 0 20px; border-radius: 8px; color: #FFF; font-weight: bold; font-size: 14px; border: none; cursor: pointer; }
+
+.rastreioCardClean { background-color: #FFF; border-radius: 12px; padding: 20px; margin-top: 10px; border: 1px solid #E0E0E0; box-shadow: 0 3px 6px rgba(0,0,0,0.05); }
+.rastreioErroCard { border-color: #dc3545; background-color: #ffe6e6; }
+.rastreioPdvHeaderClean { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #F0F0F0; }
+.rastreioPdvNomeClean { font-size: 18px; font-weight: 900; color: #000; }
+.rastreioPdvIdClean { font-size: 14px; font-weight: bold; color: #666; background-color: #F5F5F5; padding: 4px 8px; border-radius: 6px; }
+.rastreioStatusBox { margin-bottom: 15px; display: flex; flex-direction: column; align-items: center; background-color: #F9F9F9; padding: 15px; border-radius: 8px; }
+.rastreioStatusText { font-size: 18px; font-weight: 900; letter-spacing: 0.5px; margin-bottom: 5px; }
+.rastreioSubStatus { font-size: 13px; color: #666; font-style: italic; text-align: center; }
+.statusGreen { color: #28a745; } .statusOrange { color: #FF8C00; } .statusTratamento { color: #0d6efd; } .statusDanger { color: #dc3545; }
+.rastreioInfoRowMotorista { margin-top: 10px; display: flex; flex-direction: column; align-items: center; border-top: 1px solid #F0F0F0; padding-top: 15px; }
+.rastreioLabelClean { font-size: 12px; color: #888; font-weight: bold; text-transform: uppercase; margin-bottom: 4px; }
+.rastreioDriverClean { font-size: 16px; font-weight: 700; color: #333; }
+
+/* Modais de Alerta Centralizados (Confirmações) */
+.modalBoxPro { background: #FFF; width: 100%; max-width: 350px; border-radius: 20px; overflow: hidden; margin: auto; align-self: center; }
+.modalHeaderPro { background: #000; padding: 18px; text-align: center; border-bottom: 2px solid #1c9ebe;}
+.modalHeaderPro h3 { color: #1c9ebe; margin: 0; font-size: 18px; font-weight: 900; }
+.modalBodyPro { padding: 30px 20px; text-align: center; }
+.modalBodyPro p { color: #2D3748; font-size: 15px; font-weight: 600; line-height: 1.5; margin: 0; }
+.modalFooterPro { display: flex; border-top: 1px solid #EDF2F7; }
+.btnModalConfirm, .btnModalCancel { flex: 1; padding: 20px; border: none; font-weight: 900; font-size: 14px; cursor: pointer; }
+.btnModalConfirm { background: #1c9ebe; color: #000; }
+.btnModalCancel { background: #F7FAFC; color: #718096; }
+
+/* =========================================
+   7. HUB DE EXECUÇÃO MANUAL
+   ========================================= */
+
+/* Botão de Gatilho do Hub */
+.btnLancamentoManual {
+    background: linear-gradient(90deg, #1A1A1A, #2A2A2A);
+    color: #1c9ebe;
+    width: 100%;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-weight: 900;
+    font-size: 14px;
+    border: 1px dashed #1c9ebe;
+    cursor: pointer;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.1s;
+}
+.btnLancamentoManual:active { transform: scale(0.98); background: #000; }
+
+/* Formulários do Hub */
+.inputGroupAvulso {
+    background-color: #F4F5F7; border: 1px solid #D1D5DB; border-radius: 12px;
+    padding: 12px 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;
+}
+.inputGroupAvulso label { font-size: 15px; font-weight: 800; color: #333; margin: 0; }
+.inputGroupAvulso input[type="number"] {
+    width: 70px; background-color: #FFF; border: 2px solid #E0E0E0; border-radius: 8px;
+    padding: 10px; font-size: 18px; font-weight: 900; text-align: center; color: #000; outline: none; transition: border-color 0.2s;
+}
+.inputGroupAvulso input[type="number"]:focus { border-color: #1c9ebe; }
+
+.textAreaAvulso {
+    width: 100%; background-color: #F4F5F7; border: 1px solid #D1D5DB; border-radius: 12px;
+    padding: 15px; font-size: 15px; color: #000; resize: none; outline: none;
+    box-sizing: border-box; margin-top: 5px; transition: border-color 0.2s;
+}
+.textAreaAvulso:focus { border-color: #1c9ebe; background-color: #FFF; }
+
+.btnSalvarPendência {
+    background-color: #1c9ebe; color: #000; width: 100%; padding: 16px; border-radius: 30px;
+    font-weight: 900; font-size: 16px; border: none; cursor: pointer; margin-top: 20px;
+    box-shadow: 0 4px 12px rgba(255, 213, 0, 0.4);
+}
+.btnSalvarPendência:disabled { background-color: #CCC; box-shadow: none; cursor: not-allowed; }
+
+/* =========================================
+   8. ANIMAÇÕES E FEEDBACKS VISUAIS (Toasts)
+   ========================================= */
+
+/* Notificação Profissional no Topo */
+.toastGlobalPro {
+  position: fixed;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 16px 25px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 9999;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  animation: slideDownToast 0.4s ease-out forwards; /* Animação de queda suave */
+  min-width: 320px;
+  justify-content: center;
+}
+
+.toastSuccess { background-color: #1a1a1a; border-bottom: 4px solid #28a745; color: #fff; }
+.toastError { background-color: #1a1a1a; border-bottom: 4px solid #dc3545; color: #fff; }
+.toastText { font-size: 15px; font-weight: bold; margin: 0; color: #FFF; }
+
+@keyframes slideDownToast {
+  0% { top: -80px; opacity: 0; }
+  100% { top: 30px; opacity: 1; }
+}
+
+/* Animação para quando a barra global atinge 100% de performance */
+@keyframes explodirMeta {
+  0% { box-shadow: 0 0 5px #FFD500; transform: scale(1); }
+  50% { box-shadow: 0 0 15px #FF4500, 0 0 30px #FFD500; transform: scale(1.02); }
+  100% { box-shadow: 0 0 5px #FFD500; transform: scale(1); }
+}
+
+.barraExplosao {
+  animation: explodirMeta 1.5s infinite alternate;
+}
+
+/* Componentes de Pendências (Card Interno) */
+.abasPendencias { display: flex; margin-bottom: 20px; background-color: #F4F5F7; border-radius: 10px; padding: 5px; }
+.abaBtn { flex: 1; padding: 12px; border-radius: 8px; border: none; background: transparent; color: #6c757d; font-weight: bold; font-size: 12px; cursor: pointer; }
+.abaBtnAtiva { background-color: #FFF; color: #000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.scrollPendencias { overflow-y: auto; flex: 1; padding-bottom: 20px; }
+.emptyPendenciasText { text-align: center; color: #AAA; font-style: italic; margin-top: 20px; font-size: 14px; }
+.pendenciaCardGlobal { background-color: #FFF; border: 1px solid #D1D5DB; border-radius: 10px; padding: 15px; margin-bottom: 15px; display: flex; flex-direction: column; }
+.pendenciaPdvInfo { display: flex; justify-content: space-between; border-bottom: 1px solid #F4F5F7; padding-bottom: 10px; margin-bottom: 10px; }
+.pendenciaPdvName { font-size: 15px; font-weight: 900; color: #000; }
+.pendenciaPdvId { font-size: 12px; font-weight: bold; color: #6c757d; background-color: #F4F5F7; padding: 2px 6px; border-radius: 4px; }
+.pendenciaTextoBox { display: flex; align-items: center; margin-bottom: 15px; }
+.statusIndicatorGlobal { width: 10px; height: 10px; border-radius: 5px; margin-right: 10px; flex-shrink: 0; }
+.statusPendente { background-color: #FF4500; } .statusResolvido { background-color: #28a745; }
+.pendenciaTexto { font-size: 15px; color: #000; flex: 1; }
+.pendenciaTextoRiscado { color: #6c757d; text-decoration: line-through; }
+.irParaPdvBtnAmarelo { align-self: flex-end; background-color: #1c9ebe; padding: 8px 15px; border-radius: 20px; border: none; font-size: 12px; font-weight: bold; color: #000; cursor: pointer; }

@@ -1,0 +1,320 @@
+/* ==========================================================================
+   LOGIN SCREEN STYLES (Design System)
+   @description Estilos exclusivos da tela de autenticação (Gatekeeper).
+   @architecture Utiliza Flexbox para layout fluido e @keyframes para micro-interações.
+   ========================================================================== */
+
+/* =========================================
+   1. LAYOUT BASE E ESTRUTURA
+   ========================================= */
+
+/* Container principal que abraça a tela inteira (Mobile First) */
+.loginSafeArea {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Garante que a tela ocupe 100% da altura do dispositivo */
+  background-color: #F4F5F7;
+  position: relative;
+  overflow: hidden; /* Previne scroll horizontal acidental */
+}
+
+/* Container interno que centraliza os cartões e empurra o rodapé pro chão */
+.loginContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 80px;
+  position: relative;
+  z-index: 2; /* Garante que o conteúdo fique acima dos hexágonos de fundo */
+}
+
+/* =========================================
+   2. ELEMENTOS DECORATIVOS (Background)
+   ========================================= */
+
+/* Hexágonos flutuantes compondo a identidade visual corporativa */
+.bgHexagon {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background-color: rgba(200, 200, 200, 0.1);
+  transform: rotate(45deg);
+  border-radius: 20px;
+  /* UX Tweak: Impede que o usuário clique acidentalmente no fundo e perca o foco do input */
+  pointer-events: none; 
+  /* 🔥 ADICIONE ESTA LINHA AQUI PARA A BORDA: */
+  border: 3px solid rgba(8, 180, 192, 0.3); /* Coloquei um Ciano/Azul transparente pra combinar com o seu botão! */
+}
+
+/* =========================================
+   3. CABEÇALHO E LOGOTIPO
+   ========================================= */
+
+.logoSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+/* Borda externa do ícone principal */
+.hexagonBorder {
+  width: 130px;
+  height: 130px;
+  background-color: #1c9ebe;
+  transform: rotate(45deg);
+  border-radius: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Miolo escuro do ícone principal */
+.hexagonInner {
+  width: 115px;
+  height: 115px;
+  background-color: #2A2A2A;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Ícone central (O Alvo / Planner) que desfaza a rotação de 45 graus do container */
+.projectIcon {
+  font-size: 55px;
+  transform: rotate(-45deg);
+}
+
+/* Tipografia do Título da Aplicação */
+.titleRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 40px;
+}
+
+.titleBees {
+  font-size: 36px;
+  font-weight: 900;
+  color: #000000;
+  letter-spacing: -1px;
+}
+
+.titleForce {
+  font-size: 36px;
+  font-weight: 300;
+  color: #000000;
+  margin-left: 8px;
+}
+
+/* =========================================
+   4. CARTÃO INFERIOR (Formulário de Acesso)
+   ========================================= */
+
+.bottomWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Card branco arredondado que ancora o formulário na base da tela */
+.bottomCard {
+  width: 100%;
+  max-width: 600px;
+  background-color: #FFFFFF;
+  border-radius: 30px 30px 0 0;
+  padding: 40px 30px 30px 30px;
+  box-shadow: 0px -5px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.welcomeText {
+  font-size: 22px;
+  font-weight: 900;
+  color: #000000;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.instructionText {
+  font-size: 16px;
+  color: #4A4A4A;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.boldText {
+  font-weight: 900;
+  color: #1a1a1a;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  letter-spacing: 0.5px;
+}
+
+/* =========================================
+   5. CONTROLES DE INTERAÇÃO (Inputs e Botões)
+   ========================================= */
+
+/* Alinha o Input de Texto e o Botão de Enviar na mesma linha */
+.inputActionRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+
+/* Campo de digitação do Setor (Estilo Dark/Premium) */
+.loginInputSetor {
+  flex: 1;
+  max-width: 200px;
+  padding: 15px 20px;
+  background-color: #2a2a2a; 
+  border: 2px solid #1c9ebe; 
+  border-radius: 12px;
+  font-size: 24px;
+  font-weight: 900;
+  color: #1c9ebe; 
+  text-align: center;
+  transition: all 0.3s ease; /* Transição suave ao clicar (Focus) */
+  outline: none;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Feedback visual de acessibilidade ao focar no campo */
+.loginInputSetor:focus {
+  background-color: #1a1a1a;
+  box-shadow: 0 0 0 5px rgba(255, 213, 0, 0.3);
+}
+
+.loginInputSetor::placeholder {
+  color: #888;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* UX Tweak: Remove as setas (spinners) nativas dos navegadores em inputs numéricos */
+.loginInputSetor::-webkit-inner-spin-button, 
+.loginInputSetor::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+/* Botão de Submissão (Seta) */
+.goButton {
+  background-color: #1c9ebe;
+  border: none;
+  border-radius: 12px;
+  width: 62px;
+  height: 62px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  color: #000;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  box-shadow: 0 4px 15px rgba(255, 213, 0, 0.3);
+}
+
+/* Estados interativos do Botão */
+.goButton:hover:not(:disabled) {
+  background-color: #1c9ebe;
+}
+
+.goButton:active:not(:disabled) {
+  transform: scale(0.92); /* Efeito de afundamento ao clicar */
+}
+
+/* Previne múltiplos cliques enquanto a API processa o Login */
+.goButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* =========================================
+   6. COMPONENTE DE FEEDBACK (Toast Alerts)
+   ========================================= */
+
+/* Caixa flutuante de Erro/Alerta */
+.toastErroLogin {
+  position: absolute;
+  top: 25px;
+  left: 50%;
+  transform: translateX(-50%); /* Centralização absoluta perfeita */
+  background-color: #1a1a1a;
+  border-left: 5px solid #ff4444; /* Tarja lateral de identificação de erro */
+  padding: 16px 20px;
+  border-radius: 8px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  z-index: 9999; /* Garante sobreposição máxima na tela */
+  width: 90%;
+  max-width: 400px;
+  animation: slideDownToast 0.4s ease-out forwards;
+}
+
+.toastIcon {
+  font-size: 24px;
+}
+
+.toastText {
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+  font-family: inherit;
+}
+
+/* =========================================
+   7. RODAPÉ INSTITUCIONAL
+   ========================================= */
+
+.footerSection {
+  margin-bottom: 20px;
+}
+
+.versionText {
+  color: #4A4A4A;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* =========================================
+   8. ANIMAÇÕES (Keyframes)
+   ========================================= */
+
+/* Animação física: Faz o Toast de erro cair do teto de forma suave */
+@keyframes slideDownToast {
+  0% { 
+    top: -80px; 
+    opacity: 0; 
+  }
+  100% { 
+    top: 25px; 
+    opacity: 1; 
+  }
+}
+
+/* Animação visual global: Efeito de pulso luminoso para quando a meta atinge 100% */
+@keyframes explodirMeta {
+  0% { box-shadow: 0 0 5px #1c9ebe; transform: scale(1); }
+  50% { box-shadow: 0 0 15px #FF4500, 0 0 30px #1c9ebe; transform: scale(1.02); }
+  100% { box-shadow: 0 0 5px #1c9ebe; transform: scale(1); }
+}
+
+.barraExplosao {
+  animation: explodirMeta 1.5s infinite alternate;
+}
