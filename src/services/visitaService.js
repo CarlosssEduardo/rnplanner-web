@@ -1,6 +1,6 @@
 import api from './api';
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'https://rnplanner-api-ekc2hratcvgqhgc5.brazilsouth-01.azurewebsites.net';
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 export const salvarNoHub = async (dados) => {
   try {

@@ -14,7 +14,7 @@ import axios from 'axios';
  * - Em Desenvolvimento (PC): Busca a variável VITE_API_URL do arquivo .env (ex: http://localhost:8080).
  * - Em Produção (Vercel/Netlify): Assume automaticamente o servidor oficial hospedado na Azure.
  */
-const URL_DINAMICA = import.meta.env.VITE_API_URL || 'https://rnplanner-api-ekc2hratcvgqhgc5.brazilsouth-01.azurewebsites.net';
+const URL_DINAMICA = import.meta.env.VITE_API_URL;
 
 // =========================================================================
 // 2. CRIAÇÃO DA INSTÂNCIA

@@ -22,4 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# Variaveis de Ambiente
 .env
+.env.*
+!.env.production
